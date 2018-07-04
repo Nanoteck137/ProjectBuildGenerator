@@ -1,0 +1,60 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Clean Build Files",
+            "type": "shell",
+            
+            "options": {
+                "cwd": "${workspaceFolder}",
+            },
+
+            "linux": {
+                "command": "clear && make clean"                
+            },
+
+            "windows": {
+                "command": "cls; ./build.bat clean"    
+            },
+        
+            "problemMatcher": []
+        },
+        
+        {
+            "label": "Build",
+            "type": "shell",
+
+            "options": {
+                "cwd": "${workspaceFolder}",
+            },
+
+            "problemMatcher": [
+                "$msCompile",
+                "$gcc"
+            ],
+            
+            "windows": {
+                "command": "cls; ./build.bat"
+            },
+
+            "linux": {
+                "command": "clear && make"
+            },
+
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+
+            "presentation": {
+                "echo": false,
+                "reveal": "always",
+                "focus": false,
+                "panel": "dedicated",
+                "showReuseMessage": true
+            },
+        }
+    ]
+}
