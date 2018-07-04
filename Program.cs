@@ -3,6 +3,8 @@ using System.Text;
 using System.IO;
 using System;
 
+using Newtonsoft.Json;
+
 public class Command
 {
     public string command;
@@ -17,7 +19,7 @@ public class Command
     public void GenerateCode(StringBuilder str)
     {
         str.Append(this.command);
-        foreach(string param in paramaters)
+        foreach (string param in paramaters)
         {
             str.Append(" " + param);
         }
@@ -38,7 +40,7 @@ public class Section
     public void GenerateCode(StringBuilder str)
     {
         str.Append(this.name + ":\n");
-        foreach(Command command in this.commands)
+        foreach (Command command in this.commands)
         {
             str.Append("\t");
             command.GenerateCode(str);
@@ -82,14 +84,14 @@ public class BuildInfo
     {
         StringBuilder result = new StringBuilder();
 
-        foreach(Variable var in this.globalVariables)
+        foreach (Variable var in this.globalVariables)
         {
             var.GenerateCode(result);
         }
 
         result.Append("\n");
 
-        foreach(Section section in this.sections)
+        foreach (Section section in this.sections)
         {
             section.GenerateCode(result);
         }
@@ -98,14 +100,22 @@ public class BuildInfo
     }
 }
 
+public class Test
+{
+    public string name;
+    public int num;
+
+    public Test(string name, int num)
+    {
+        this.name = name;
+        this.num = num;
+    }
+}
+
 class Program
 {
     static void Main(string[] args)
     {
-        /*std::vector<Command> commands = {
-            { "cl", { "-Zi", "%dir%\\main.cpp" } },
-        };*/
-
         List<Command> commands = new List<Command>() {
             new Command("cl", new List<string> { "-Zi", "%dir%\\main.cpp" } ),
         };
@@ -119,7 +129,10 @@ class Program
 
         BuildInfo buildInfo = new BuildInfo("make.win32", globalVariables, new List<Section> { section });
 
-        Console.WriteLine(buildInfo.GenerateCode());
+        string json = "{ name: \"Hello\" }";
+        Test test = JsonConvert.DeserializeObject<Test>(json);
+
+        //Console.WriteLine(buildInfo.GenerateCode());
         Console.ReadLine();
     }
 }
