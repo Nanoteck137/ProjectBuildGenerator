@@ -1,0 +1,9 @@
+{
+    "targets": [
+        {
+            "name": "main",
+            "output": "program",
+            "type": "exe"
+        }
+    ]
+}

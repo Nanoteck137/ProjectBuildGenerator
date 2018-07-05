@@ -18,7 +18,19 @@
         {
             "name": "test",
             "output": "system",
-            "type": "static"
+            "type": "static",
+            "option": {
+                "debug": true,
+                "windows": {
+                    "compiler": "",
+                    "linker": ""
+                },
+
+                "linux": {
+                    "compiler": "",
+                    "linker": ""
+                }
+            }
         }
     ]
 }

@@ -52,6 +52,18 @@ Target2: Deps
 
 
 
+Modes = [ unknown, win32, linux ]
+
+struct Target
+{
+    
+}
+
+struct Program
+{
+    
+}
+
 
 
 
