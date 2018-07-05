@@ -9,16 +9,16 @@
         "packer": "ar"
     },
 
-    "target": [
+    "targets": [
         {
-            "sourceDir": "test",
-            "type": "Executable",
-            "files": [ "main.cpp" ]
+            "name": "main",
+            "output": "program",
+            "type": "exe"
         },
         {
-            "sourceDir": "system",
-            "type": "StaticLibrary",
-            "files": [ "#MODE_file.cpp" ]
+            "name": "test",
+            "output": "system",
+            "type": "static"
         }
     ]
 }

@@ -40,3 +40,19 @@ file1.o: file1.cpp
 
 libtest.a: file1.o file2.o
     $(packer)
+
+
+map<string, TargetInfo> names
+
+Target: Deps
+    Commands...
+
+Target2: Deps
+    Commands...
+
+
+
+
+
+
+
