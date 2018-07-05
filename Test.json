@@ -11,5 +11,27 @@
                 "compiler": "clang++"
             }
         }
+    ],
+
+    "sections": [
+        {
+            "name": "compileStaticLib",
+            "output": "system",
+
+            "commands": [
+                { "command": "compile", "files": ["file.cpp", "directory.cpp"] },
+                { "command": "pack", "files": ["file", "directory"] }
+            ]
+        },
+        {
+            "name": "compileMain",
+            "output": "program",
+
+            "dependencies": [ "compileStaticLib" ],
+            
+            "commands": [
+                { "command": "compile", "files": ["main.cpp"] }
+            ]
+        }
     ]
 }

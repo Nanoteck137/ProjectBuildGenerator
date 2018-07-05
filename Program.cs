@@ -19,7 +19,7 @@ public class Command
     public void GenerateCode(StringBuilder str)
     {
         str.Append(this.command);
-        foreach (string param in paramaters)
+        foreach(string param in paramaters)
         {
             str.Append(" " + param);
         }
@@ -100,21 +100,34 @@ public class BuildInfo
     }
 }
 
-public class Test
+class ConfigTarget
 {
-    public string name;
-    public int num;
+    public string sourceDir = null;
+    public string type = null;
+    public List<string> files = null;
+}
 
-    public Test(string name, int num)
+class Config
+{
+    private string filePath;
+
+    public Config(string filePath)
     {
-        this.name = name;
-        this.num = num;
+        this.filePath = filePath;
+    }
+
+    public List<ConfigTarget> GetTargets()
+    {
+        string fileContent = File.ReadAllText(this.filePath);
+        List<ConfigTarget> result = JsonConvert.DeserializeObject<List<ConfigTarget>>(fileContent);
+        
+        return result;
     }
 }
 
 class Program
 {
-    static void Main(string[] args)
+    public Program()
     {
         List<Command> commands = new List<Command>() {
             new Command("cl", new List<string> { "-Zi", "%dir%\\main.cpp" } ),
@@ -128,11 +141,16 @@ class Program
         };
 
         BuildInfo buildInfo = new BuildInfo("make.win32", globalVariables, new List<Section> { section });
+        Console.WriteLine(buildInfo.GenerateCode());
 
-        string json = "{ name: \"Hello\" }";
-        Test test = JsonConvert.DeserializeObject<Test>(json);
+        Config config = new Config("Test2.json");
+        List<ConfigTarget> targets = config.GetTargets();
 
-        //Console.WriteLine(buildInfo.GenerateCode());
         Console.ReadLine();
+    }
+
+    public static void Main(string[] args)
+    {
+        new Program();
     }
 }

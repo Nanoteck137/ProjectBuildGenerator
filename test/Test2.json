@@ -1,0 +1,24 @@
+{
+    "windows": {
+        "compiler": "cl",
+        "packer": "lib"
+    },
+
+    "linux": {
+        "compiler": "clang++",
+        "packer": "ar"
+    },
+
+    "target": [
+        {
+            "sourceDir": "test",
+            "type": "Executable",
+            "files": [ "main.cpp" ]
+        },
+        {
+            "sourceDir": "system",
+            "type": "StaticLibrary",
+            "files": [ "#MODE_file.cpp" ]
+        }
+    ]
+}

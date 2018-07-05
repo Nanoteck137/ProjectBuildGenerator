@@ -1,0 +1,14 @@
+{
+    "targets": [
+        {
+            "sourceDir": "test",
+            "type": "Executable",
+            "files": [ "main.cpp" ]
+        },
+        {
+            "sourceDir": "system",
+            "type": "StaticLibrary",
+            "files": [ "#MODE_file.cpp" ]
+        }
+    ]
+}

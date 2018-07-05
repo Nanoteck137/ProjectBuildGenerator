@@ -1,0 +1,42 @@
+Command line:
+
+Generate a makefile with all the options:
+
+Generate a build.bat/sh:
+
+Generate Windows file: win32 mode
+    pbg -win32 pathToConfig
+Generate Unix/Linux file: linux mode
+    pbg -linux pathToConfig
+
+Format for files:
+    NAME.c/cpp - Include in all build modes
+    win32_NAME.c/cpp - Include only in win32 mode
+    linux_NAME.c/cpp - Include only in linux mode
+
+StaticLibrary:
+
+files = [ file1.cpp, file2.cpp ]
+name = test
+
+Make - win32:
+
+compiler = cl
+packer = lib
+
+file1.obj: file1.cpp
+    $(compiler) /c COMPILER_OPTIONS $(DIR)/file1.cpp
+
+test.lib: file1.obj file2.obj
+    $(packer) /out:test.lib
+
+Make - linux:
+
+compiler = clang++
+packer = ar
+
+file1.o: file1.cpp
+    $(compiler) -c COMPILER_OPTIONS -o $(DIR)/file1.o
+
+libtest.a: file1.o file2.o
+    $(packer)
