@@ -1,0 +1,8 @@
+System Library:
+
+System.Print();
+System.PrintLine();
+
+Project Library:
+
+Project.AddTarget();

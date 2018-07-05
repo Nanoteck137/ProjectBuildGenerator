@@ -136,6 +136,7 @@ class MakeProgram
     }
 }
 
+
 class Program
 {
     public Program(Mode mode)
@@ -216,11 +217,13 @@ class Program
                 throw new Exception();
         }
 
-        string scriptData = File.ReadAllText("test.lua");
-        Script script = new Script();
-        
-        DynValue value = script.DoString(scriptData);
-        Console.WriteLine("Value: {0}", value.Number);
+
+        UserData.RegisterAssembly(System.Reflection.Assembly.GetExecutingAssembly());
+
+        LuaScript script = new LuaScript("test.lua");
+
+        DynValue res = script.CallFunction("test", 4, 8);
+        Console.WriteLine("Value: {0}", res.Number);
 
         Console.Read();
 
