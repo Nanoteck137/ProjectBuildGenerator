@@ -217,7 +217,6 @@ class Program
                 throw new Exception();
         }
 
-
         UserData.RegisterAssembly(System.Reflection.Assembly.GetExecutingAssembly());
 
         LuaScript script = new LuaScript("test.lua");

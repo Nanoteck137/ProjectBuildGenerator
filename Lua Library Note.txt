@@ -1,8 +1,12 @@
 System Library:
 
-System.Print();
-System.PrintLine();
+System.Print(string);
+System.PrintLine(string);
 
 Project Library:
 
-Project.AddTarget();
+local section = {
+    name = "",
+};
+
+Project.AddSection();
