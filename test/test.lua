@@ -4,8 +4,8 @@
 -- Func.PrintTest("Wowooo".." Hello" .. 123);
 
 System.Print("Hello ");
-System.PrintLine("World");
+System.PrintLine("World: " .. System.Hello);
 
-function test(a, b)
-    return a + b;
+function init(mode)
+    
 end

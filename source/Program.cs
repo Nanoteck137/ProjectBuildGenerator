@@ -203,6 +203,11 @@ class Program
         return Directory.GetFiles(dirPaths, ext, SearchOption.AllDirectories);
     }
 
+    public static void TestFunction(string name)
+    {
+        Console.WriteLine("This is a test Function: " + name);
+    }
+
     public static void Main(string[] args)
     {
         Mode mode = Mode.Unknown;
@@ -219,10 +224,13 @@ class Program
 
         UserData.RegisterAssembly(System.Reflection.Assembly.GetExecutingAssembly());
 
-        LuaScript script = new LuaScript("test.lua");
-
+        LuaScript script = new LuaScript();
+        script.AddFunction((Action<string>)Program.TestFunction);
+        
         DynValue res = script.CallFunction("test", 4, 8);
+
         Console.WriteLine("Value: {0}", res.Number);
+        
 
         Console.Read();
 

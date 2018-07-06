@@ -3,10 +3,24 @@ System Library:
 System.Print(string);
 System.PrintLine(string);
 
+System.GetAllFilesWithExt(dir, ext);
+
 Project Library:
 
-local section = {
-    name = "",
-};
+file table = {
+    SourceFile = string,
+}
 
-Project.AddSection();
+project_type enum = {
+    None = 0,
+    Executable = 1,
+    StaticLibrary = 2,
+}
+
+project table = {
+    Name = string,
+    Files = array[file table],
+    Type = project_type,
+}
+
+Project.AddProject(project);
