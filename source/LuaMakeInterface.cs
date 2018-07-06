@@ -2,8 +2,17 @@ using System;
 
 using MoonSharp.Interpreter;
 
-[MoonSharpUserData]
-class LuaMakeProject
+namespace LuaInterface
 {
-    private LuaMakeProject() { }
+    [MoonSharpUserData]
+    class ProjectInterface
+    {
+        private ProjectInterface() { }
+
+        public static void AddProject(Table projectData)
+        {
+            DynValue value = projectData.Get("Name");
+        }
+
+    }
 }
