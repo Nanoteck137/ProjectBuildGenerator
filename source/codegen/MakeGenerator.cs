@@ -40,7 +40,36 @@ namespace CodeGen.Make
 
         public void GenCode(StringBuilder builder)
         {
-            builder.Append("This is a command\n");
+            switch(this.Type)
+            {
+                case CommandType.CompileExe:
+                
+                    break;
+
+                case CommandType.CompileObj:
+                    builder.AppendFormat("$(compiler) $(compilerOnlySwitch)");
+
+                    foreach(string file in this.Files)
+                    {
+                        builder.Append(" " + file);
+                    }
+
+                    builder.Append(" $(outputObjSwitch) ");
+                    builder.Append(this.OutputName);
+                    builder.Append("\n");
+
+                    break;
+
+                case CommandType.PackStaticLib:
+                
+                    break;
+
+                case CommandType.Custom:
+                    builder.Append(this.CustomCommand + "\n");
+                    break;
+
+                default: throw new Exception();
+            }
         }
     }
 
@@ -130,6 +159,7 @@ namespace CodeGen.Make
             {
                 variable.GenCode(result);
             }
+            
             result.Append("\n");
 
             foreach(Target target in this.targets)

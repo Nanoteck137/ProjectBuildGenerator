@@ -7,7 +7,7 @@ main.obj: $(srcDir)\main.cpp
 	$(compiler) /c $(srcDir)\main.cpp
 
 test1.obj: $(srcDir)\test1.cpp
-	$(compiler) /c $(srcDir)\test1.cpp
+	$(compiler) /c $(srcDir)\test1.cpp /Fo: test1.obj
 
 program.exe: main.obj test1.obj
-	$(compiler) main.obj test1.obj /Feprogram.exe
+	$(compiler) main.obj test1.obj /Fe: program.exe
