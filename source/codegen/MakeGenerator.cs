@@ -17,6 +17,16 @@ namespace CodeGen.Make
         public string[] Files { get; set; }
         public string OutputName { get; set; }
         public string Options { get; set; }
+
+        public Command() { }
+
+        public Command(CommandType type, string[] files, string outputName, string options)
+        {
+            this.Type = type;
+            this.Files = files;
+            this.OutputName = outputName;
+            this.Options = options;
+        }
     }
 
     class Target
@@ -24,6 +34,15 @@ namespace CodeGen.Make
         public string Name { get; set; }
         public string[] Dependencies { get; set; }
         public Command[] Commands { get; set; }
+
+        public Target() { }
+
+        public Target(string name, string[] dependencies, Command[] commands) 
+        { 
+            this.Name = name;
+            this.Dependencies = dependencies;
+            this.Commands = commands;
+        }
     }
 
     class Generator

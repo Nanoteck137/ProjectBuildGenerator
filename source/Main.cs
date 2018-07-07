@@ -6,12 +6,14 @@ using System;
 
 using MoonSharp.Interpreter;
 
+using MakeGen = CodeGen.Make;
+
 /*
     TODO:
      - Need to redo the code generator for make files
      - Need to implement the code generator 
         for batch and shell files
-     - 
+     - Give all the object compile result a diffrent name like: ProjectName_InputName.obj
  */
 
 enum Mode
@@ -86,7 +88,7 @@ class Program
     private Dictionary<Mode, Config> configs;
     private List<Project.Project> projects;
 
-    private CodeGen.Make.Generator makeGenerator;
+    private MakeGen.Generator makeGenerator;
 
     public Program(Mode mode)
     {
@@ -94,7 +96,7 @@ class Program
         this.configs = new Dictionary<Mode, Config>();
         this.projects = new List<Project.Project>();
 
-        makeGenerator = new CodeGen.Make.Generator();
+        makeGenerator = new MakeGen.Generator();
 
         SetupLua();
 
@@ -104,15 +106,23 @@ class Program
 
         Project.Project[] projects = Project.ProjectManager.GetProjects();
 
+        CreateMakeTargetsFromProject(makeGenerator, projects[0], configs[mode]);
+
         Console.Read();
     }
 
-    private void CreateMakeTargetsFromProject(CodeGen.Make.Generator generator, Project.Project project, Config config)
+    private void CreateMakeTargetsFromProject(MakeGen.Generator generator, Project.Project project, Config config)
     {
         foreach(string file in project.Files)
         {
             string targetName = Helper.GetObjFileName(config, file);
-            
+
+            MakeGen.Target targetRes = new MakeGen.Target(); 
+            targetRes.Name = targetName;
+            targetRes.Dependencies = new string[] { file };
+            targetRes.Commands = new MakeGen.Command[] { new MakeGen.Command(MakeGen.CommandType.CompileObj, new string[] { file }, targetName, "") };
+
+            generator.AddTarget(targetRes);
         }
     }
 
