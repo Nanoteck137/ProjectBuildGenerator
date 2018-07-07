@@ -79,14 +79,11 @@ class Helper
     }
 }
 
-
-
 class Program
 {
     private LuaScript script;
 
     private Dictionary<Mode, Config> configs;
-    private List<Project.Project> projects;
 
     private MakeGen.Generator makeGenerator;
 
@@ -94,11 +91,13 @@ class Program
     {
         this.script = new LuaScript();
         this.configs = new Dictionary<Mode, Config>();
-        this.projects = new List<Project.Project>();
 
         makeGenerator = new MakeGen.Generator();
 
         SetupLua();
+
+        makeGenerator.AddVariable(new MakeGen.Variable("compiler", "cl"));
+        makeGenerator.AddVariable(new MakeGen.Variable("packer", "lib"));
 
         this.script.RunScript("test.lua");
 
@@ -108,6 +107,7 @@ class Program
 
         CreateMakeTargetsFromProject(makeGenerator, projects[0], configs[mode]);
 
+        Console.WriteLine(makeGenerator.GenCode());
         Console.Read();
     }
 
@@ -141,11 +141,6 @@ class Program
     public void AddConfig(Mode mode, Config config)
     {
         this.configs.Add(mode, config);
-    }
-
-    public void AddProject(Project.Project project)
-    {
-        this.projects.Add(project);
     }
 
     public static void Main(string[] args)
