@@ -5,6 +5,48 @@ using MoonSharp.Interpreter;
 
 namespace LuaInterface
 {
+    class LuaHelper
+    {
+        private LuaHelper() { }
+
+        public static string GetStringFromValue(DynValue value)
+        {
+            if(value.IsNil())
+                throw new Exception("Value cant be nil"); //TODO: Better error handling
+            if(value.Type != DataType.String)
+                throw new Exception("Value is not a string"); //TODO: Better error handling
+            
+            return value.String;
+        }        
+    }
+
+    [MoonSharpUserData]
+    class ConfigInterface
+    {
+        private Program program;
+
+        public ConfigInterface(Program program)
+        {
+            this.program = program;
+        }
+
+        public void AddConfig(Mode mode, Table configData)
+        {
+            Config result = new Config();
+
+            DynValue compiler = configData.Get("Compiler");
+            DynValue compilerOnlySwitch = configData.Get("CompilerOnlySwitch");
+            DynValue packer = configData.Get("Packer");
+
+            result.Compiler = LuaHelper.GetStringFromValue(compiler);
+            result.CompilerOnlySwitch = LuaHelper.GetStringFromValue(compilerOnlySwitch);
+            result.Packer = LuaHelper.GetStringFromValue(packer);
+            result.Mode = mode;
+
+            program.AddConfig(mode, result);
+        }
+    }
+
     [MoonSharpUserData]
     class ProjectInterface
     {
