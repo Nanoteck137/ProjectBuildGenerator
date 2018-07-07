@@ -7,8 +7,6 @@ using MoonSharp.Interpreter.Loaders;
 [MoonSharpUserData]
 class LuaSystemLibrary
 {
-    public const int Hello = 4284; 
-
     private LuaSystemLibrary() { }
 
     public static void Print(string str)
@@ -20,13 +18,28 @@ class LuaSystemLibrary
     {
         Console.WriteLine(str);
     }
+
+    public static string[] GetAllFilesWithExt(string dirPaths, string ext)
+    {
+        return Directory.GetFiles(dirPaths, ext, SearchOption.AllDirectories);
+    }
+
+    public static string GetDirectoryPath()
+    {
+        return Directory.GetCurrentDirectory();
+    }
+
+    public static string GetCurrentPath(string relativePath)
+    {
+        return Path.Combine(GetDirectoryPath(), relativePath);
+    }
 }
 
 class LuaScriptLoader : ScriptLoaderBase
 {
     public override object LoadFile(string file, Table globalContext)
     {
-        return string.Format("System.WriteLine(\"Need to load file {0}\")", file);
+        return string.Format("print(\"Need to load file {0}\")", file);
     }
 
     public override bool ScriptFileExists(string name)
@@ -47,7 +60,11 @@ class LuaScript
         loader.ModulePaths = new string[] { "?" };
         script.Options.ScriptLoader = loader;
         script.Globals["System"] = typeof(LuaSystemLibrary);
-        script.Globals["Project"] = typeof(LuaInterface.ProjectInterface);
+    }
+
+    public void AddInterface(string name, object instance)
+    {
+        script.Globals[name] = instance;
     }
 
     public void RunScript(string luaFilePath)

@@ -1,21 +1,18 @@
--- Func.PrintTest("Hello World");
--- Func.PrintTest("This is cool");
--- Func.PrintTest("Wow such cool");
--- Func.PrintTest("Wowooo".." Hello" .. 123);
-
-require("test2.lua");
-
-System.Print("Hello ");
-System.PrintLine("World: " .. System.Hello);
-
--- System.PrintLine(test.Test);
-
-project = {
-    Name = "Wowowo"
+local project = {
+    Name = "Wowowo",
+    Type = ProjectType.Executable,
 }
 
-Project.AddProject(project)
+function Init(mode)
+    Project.AddProject(project);
+end
 
-function init(mode)
-    
+function GetKeyName(table, value)
+    for k, v in pairs(table) do
+        if v == value then 
+            return k; 
+        end
+    end
+
+    return nil;
 end

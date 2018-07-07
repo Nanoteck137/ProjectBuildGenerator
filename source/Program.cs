@@ -23,11 +23,41 @@ enum ProjectType
     DynamicLibrary,
 }
 
+class Project
+{
+    public string Name { get; set; }
+    public ProjectType Type { get; set; }
+
+    public Project() { }
+}
+
 class Program
 {
-    public static string[] GetAllFilesWithExt(string dirPaths, string ext)
+    private LuaScript script;
+
+    private List<Project> projects;
+
+    public Program(Mode mode)
     {
-        return Directory.GetFiles(dirPaths, ext, SearchOption.AllDirectories);
+        this.script = new LuaScript();
+        this.projects = new List<Project>();
+
+        this.script.AddEnumType("Mode", typeof(Mode));
+        this.script.AddEnumType("ProjectType", typeof(ProjectType));
+
+        LuaInterface.ProjectInterface projectInterface = new LuaInterface.ProjectInterface(this);
+        this.script.AddInterface("Project", projectInterface);
+
+        this.script.RunScript("test.lua");
+
+        this.script.CallFunction("Init", mode);
+
+        Console.Read();
+    }
+
+    public void AddProject(Project project)
+    {
+        this.projects.Add(project);
     }
 
     public static void Main(string[] args)
@@ -45,13 +75,6 @@ class Program
 
         UserData.RegisterAssembly(System.Reflection.Assembly.GetExecutingAssembly());
 
-        LuaScript script = new LuaScript();
-        script.AddEnumType("Mode", typeof(Mode));
-        script.AddEnumType("ProjectType", typeof(ProjectType));
-        
-        script.RunScript("test.lua");
-        Console.Read();
-
-        //new Program(mode);
+        new Program(mode);
     }
 }

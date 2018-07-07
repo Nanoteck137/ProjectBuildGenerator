@@ -4,6 +4,8 @@ System.Print(string);
 System.PrintLine(string);
 
 System.GetAllFilesWithExt(dir, ext);
+System.GetDirectoryPath(); - Gets the current working directory of the app
+System.GetCurrentPath(relativePath); - Combines the current directory and the relative path
 
 Project Library:
 
