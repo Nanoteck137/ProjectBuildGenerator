@@ -21,14 +21,6 @@ enum Mode
     Linux,
 }
 
-enum ProjectType
-{
-    Unknown,
-    Executable,
-    StaticLibrary,
-    DynamicLibrary,
-}
-
 class Config
 {
     public string Compiler { get; set; }
@@ -85,83 +77,55 @@ class Helper
     }
 }
 
-class Project
-{
-    public string Name { get; set; }
-    public ProjectType Type { get; set; }
-    public string[] Files { get; set; }
 
-    public Project() { }
-
-    public void GenerateCode(Config config, StringBuilder result)
-    {
-        //TODO: Redo code generation
-        string objFiles = "";
-
-        foreach(string file in this.Files)
-        {
-            string name = Path.GetFileNameWithoutExtension(file);
-
-            result.Append(Helper.CreateTargetCode(config, name, true, file));
-            result.Append("\n");
-
-            result.Append("\t");
-            result.Append(Helper.CreateCompilerCode(config, true, file));
-
-            result.Append("\n\n");
-
-            objFiles = objFiles + " " + Helper.GetObjFileName(config, file);
-        }
-
-        result.Append(Helper.CreateTargetCode(config, this.Name, false, objFiles));
-        result.Append("\n");
-
-        result.Append("\t");
-        result.Append(Helper.CreateCompilerCode(config, false, objFiles));
-
-        result.Append(" /Fe" + this.Name + ".exe");
-        result.Append("\n");
-    }
-}
 
 class Program
 {
     private LuaScript script;
 
     private Dictionary<Mode, Config> configs;
-    private List<Project> projects;
+    private List<Project.Project> projects;
+
+    private CodeGen.Make.Generator makeGenerator;
 
     public Program(Mode mode)
     {
         this.script = new LuaScript();
         this.configs = new Dictionary<Mode, Config>();
-        this.projects = new List<Project>();
+        this.projects = new List<Project.Project>();
 
+        makeGenerator = new CodeGen.Make.Generator();
+
+        SetupLua();
+
+        this.script.RunScript("test.lua");
+
+        this.script.CallFunction("Init", mode);
+
+        Project.Project[] projects = Project.ProjectManager.GetProjects();
+
+        Console.Read();
+    }
+
+    private void CreateMakeTargetsFromProject(CodeGen.Make.Generator generator, Project.Project project, Config config)
+    {
+        foreach(string file in project.Files)
+        {
+            string targetName = Helper.GetObjFileName(config, file);
+            
+        }
+    }
+
+    private void SetupLua()
+    {
         this.script.AddEnumType("Mode", typeof(Mode));
-        this.script.AddEnumType("ProjectType", typeof(ProjectType));
+        this.script.AddEnumType("ProjectType", typeof(Project.Type));
 
         LuaInterface.ProjectInterface projectInterface = new LuaInterface.ProjectInterface(this);
         this.script.AddInterface("Project", projectInterface);
 
         LuaInterface.ConfigInterface configInterface = new LuaInterface.ConfigInterface(this);
         this.script.AddInterface("Config", configInterface);
-
-        this.script.RunScript("test.lua");
-
-        this.script.CallFunction("Init", mode);
-
-        Console.WriteLine(GenerateCode(configs[mode]));
-        Console.Read();
-    }
-
-    public string GenerateCode(Config config)
-    {
-        StringBuilder result = new StringBuilder();
-
-        result.Append("all:\n\t@echo Select a target\n\n");
-
-        this.projects[0].GenerateCode(config, result);
-        return result.ToString();
     }
 
     public void AddConfig(Mode mode, Config config)
@@ -169,7 +133,7 @@ class Program
         this.configs.Add(mode, config);
     }
 
-    public void AddProject(Project project)
+    public void AddProject(Project.Project project)
     {
         this.projects.Add(project);
     }
