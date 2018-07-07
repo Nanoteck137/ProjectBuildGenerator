@@ -27,6 +27,7 @@ class Project
 {
     public string Name { get; set; }
     public ProjectType Type { get; set; }
+    public string[] Files { get; set; }
 
     public Project() { }
 }
@@ -53,6 +54,12 @@ class Program
         this.script.CallFunction("Init", mode);
 
         Console.Read();
+    }
+
+    public string GenerateCode()
+    {
+        
+        return null;
     }
 
     public void AddProject(Project project)

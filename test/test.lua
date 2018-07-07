@@ -1,9 +1,12 @@
-local project = {
-    Name = "Wowowo",
-    Type = ProjectType.Executable,
-}
-
 function Init(mode)
+    local files = System.GetAllFilesWithExt(System.GetCurrentPath("source/"), "*.cpp");
+
+    local project = {
+        Name = "Program",
+        Type = ProjectType.Executable,
+        Files = files,
+    };
+    
     Project.AddProject(project);
 end
 
