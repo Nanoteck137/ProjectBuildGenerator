@@ -6,6 +6,14 @@ using System;
 
 using MoonSharp.Interpreter;
 
+/*
+    TODO:
+     - Need to redo the code generator for make files
+     - Need to implement the code generator 
+        for batch and shell files
+     - 
+ */
+
 enum Mode
 {
     Unknown,
@@ -87,6 +95,7 @@ class Project
 
     public void GenerateCode(Config config, StringBuilder result)
     {
+        //TODO: Redo code generation
         string objFiles = "";
 
         foreach(string file in this.Files)
