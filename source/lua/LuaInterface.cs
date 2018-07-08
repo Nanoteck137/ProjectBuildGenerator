@@ -36,11 +36,17 @@ namespace LuaInterface
 
             DynValue compiler = configData.Get("Compiler");
             DynValue compilerOnlySwitch = configData.Get("CompilerOnlySwitch");
+            DynValue outputObjSwitch = configData.Get("OutputObjSwitch");
+            DynValue outputExeSwitch = configData.Get("OutputExeSwitch");
+
             DynValue packer = configData.Get("Packer");
 
-            result.Compiler = LuaHelper.GetStringFromValue(compiler);
-            result.CompilerOnlySwitch = LuaHelper.GetStringFromValue(compilerOnlySwitch);
-            result.Packer = LuaHelper.GetStringFromValue(packer);
+            result.Compiler = compiler.String;
+            result.CompilerOnlySwitch = compilerOnlySwitch.String;
+            result.OutputObjSwitch = outputObjSwitch.String;
+            result.OutputExeSwitch = outputExeSwitch.String;
+            result.Packer = packer.String;
+
             result.Mode = mode;
 
             program.AddConfig(mode, result);

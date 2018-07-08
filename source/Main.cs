@@ -27,6 +27,9 @@ class Config
 {
     public string Compiler { get; set; }
     public string CompilerOnlySwitch { get; set; }
+    public string OutputObjSwitch { get; set; }
+    public string OutputExeSwitch { get; set; }
+
     public string Packer { get; set; }
     public Mode Mode { get; set; }
 
@@ -77,6 +80,56 @@ class Helper
             return string.Format("{0} {1} {2}", config.Compiler, config.CompilerOnlySwitch, files);
         return string.Format("{0}{1}", config.Compiler, files);
     }
+
+    public static string GetDefaultCompiler(Mode mode)
+    {
+        switch(mode)
+        {
+            case Mode.Windows: return "cl";
+            case Mode.Linux: return "clang++";
+            default: throw new Exception();
+        }
+    }
+
+    public static string GetDefaultCompilerOnlySwitch(Mode mode)
+    {
+        switch (mode)
+        {
+            case Mode.Windows: return "/c";
+            case Mode.Linux: return "-c";
+            default: throw new Exception();
+        }
+    }
+
+    public static string GetDefaultOutputObjSwitch(Mode mode)
+    {
+        switch (mode)
+        {
+            case Mode.Windows: return "/Fo:";
+            case Mode.Linux: return "-o";
+            default: throw new Exception();
+        }
+    }
+
+    public static string GetDefaultOutputExeSwitch(Mode mode)
+    {
+        switch (mode)
+        {
+            case Mode.Windows: return "/Fe:";
+            case Mode.Linux: return "-o";
+            default: throw new Exception();
+        }
+    }
+
+    public static string GetDefaultPacker(Mode mode)
+    {
+        switch (mode)
+        {
+            case Mode.Windows: return "lib";
+            case Mode.Linux: return "ar";
+            default: throw new Exception();
+        }
+    }
 }
 
 class Program
@@ -96,34 +149,124 @@ class Program
 
         SetupLua();
 
-        makeGenerator.AddVariable(new MakeGen.Variable("compiler", "cl"));
-        makeGenerator.AddVariable(new MakeGen.Variable("packer", "lib"));
-
         this.script.RunScript("test.lua");
 
         this.script.CallFunction("Init", mode);
 
+        ProcessConfig(mode);
+
+        Config config = this.configs[mode];
+
+        makeGenerator.AddVariable(new MakeGen.Variable("compiler", config.Compiler));
+        makeGenerator.AddVariable(new MakeGen.Variable("compilerOnlySwitch", config.CompilerOnlySwitch));
+        makeGenerator.AddVariable(new MakeGen.Variable("outputObjSwitch", config.OutputObjSwitch));
+        makeGenerator.AddVariable(new MakeGen.Variable("outputExeSwitch", config.OutputExeSwitch));
+
+        makeGenerator.AddVariable(new MakeGen.Variable("packer", config.Packer));
+
         Project.Project[] projects = Project.ProjectManager.GetProjects();
 
-        CreateMakeTargetsFromProject(makeGenerator, projects[0], configs[mode]);
+        foreach(Project.Project project in projects)
+        {
+            CreateMakeTargetsFromProject(makeGenerator, project, config);
+        }
 
-        Console.WriteLine(makeGenerator.GenCode());
+        string code = makeGenerator.GenCode();
+        Console.WriteLine(code);
+        File.WriteAllText("GeneratedMake.txt", code);
         Console.Read();
+    }
+
+    private void ProcessConfig(Mode mode)
+    {
+        if(!this.configs.ContainsKey(mode))
+        {
+            Config config = new Config();
+            config.Compiler = Helper.GetDefaultCompiler(mode);
+            config.CompilerOnlySwitch = Helper.GetDefaultCompilerOnlySwitch(mode);
+            config.OutputObjSwitch = Helper.GetDefaultOutputObjSwitch(mode);
+            config.OutputExeSwitch = Helper.GetDefaultOutputExeSwitch(mode);
+            config.Packer = Helper.GetDefaultPacker(mode);
+
+            config.Mode = mode;
+
+            this.configs.Add(mode, config);
+        }
+
+        Config currentConfig = this.configs[mode];
+        if(currentConfig.Compiler == null || currentConfig.Compiler == String.Empty)
+        {
+            currentConfig.Compiler = Helper.GetDefaultCompiler(mode);
+        }
+
+        if(currentConfig.CompilerOnlySwitch == null || currentConfig.CompilerOnlySwitch == String.Empty)
+        {
+            currentConfig.CompilerOnlySwitch = Helper.GetDefaultCompilerOnlySwitch(mode);
+        }
+
+        if(currentConfig.OutputObjSwitch == null || currentConfig.OutputObjSwitch == String.Empty)
+        {
+            currentConfig.OutputObjSwitch = Helper.GetDefaultOutputObjSwitch(mode);
+        }
+
+        if(currentConfig.OutputExeSwitch == null || currentConfig.OutputExeSwitch == String.Empty)
+        {
+            currentConfig.OutputExeSwitch = Helper.GetDefaultOutputExeSwitch(mode);
+        }
+
+        if(currentConfig.Packer == null || currentConfig.Packer == String.Empty)
+        {
+            currentConfig.Packer = Helper.GetDefaultPacker(mode);
+        }
+
     }
 
     private void CreateMakeTargetsFromProject(MakeGen.Generator generator, Project.Project project, Config config)
     {
+        List<string> objFiles = new List<string>();
         foreach(string file in project.Files)
         {
-            string targetName = Helper.GetObjFileName(config, file);
+            string targetName = project.Name + "_" + Helper.GetObjFileName(config, file);
+            objFiles.Add(targetName);
 
             MakeGen.Target targetRes = new MakeGen.Target(); 
             targetRes.Name = targetName;
             targetRes.Dependencies = new string[] { file };
-            targetRes.Commands = new MakeGen.Command[] { new MakeGen.Command(MakeGen.CommandType.CompileObj, new string[] { file }, targetName, "") };
+            targetRes.Commands = new MakeGen.Command[] {
+                new MakeGen.Command("cl", new string[] { "/c", file, "/Fo:", targetName})
+            };
 
             generator.AddTarget(targetRes);
         }
+
+        MakeGen.Target projTarget = new MakeGen.Target();
+        switch(project.Type)
+        {
+            case Project.Type.Executable: {
+                string name = project.Name + Helper.GetExecutableFileExt(config.Mode);
+
+                List<string> arguments = new List<string>();
+                arguments.AddRange(objFiles);
+                arguments.Add("/Fe:");
+                arguments.Add(name);
+                
+                projTarget.Name = name;
+                projTarget.Dependencies = objFiles.ToArray();
+                projTarget.Commands = new MakeGen.Command[] {
+                    new MakeGen.Command("cl", arguments.ToArray())
+                    //new MakeGen.Command(MakeGen.CommandType.CompileExe, objFiles.ToArray(), name, "")
+                };
+            } break;
+
+            case Project.Type.StaticLibrary:
+                break;
+            case Project.Type.DynamicLibrary:
+                break;
+
+            default: throw new Exception();
+        }
+
+        generator.AddTarget(projTarget);
     }
 
     private void SetupLua()

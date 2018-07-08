@@ -9,7 +9,7 @@
             "type": "coreclr",
             "request": "launch",
             // "preLaunchTask": "Dotnet - Build",
-            "program": "${workspaceFolder}/bin/Debug/netcoreapp2.1/ProjectBuildGenerator.dll",
+            "program": "${workspaceFolder}/bin/x64/Debug/netcoreapp2.1/ProjectBuildGenerator.dll",
             "args": ["-win32"],
             "cwd": "${workspaceFolder}/test",
             "console": "externalTerminal",

@@ -7,10 +7,6 @@ packer=lib
 all:
 	@echo Select a Target
 
-compileAll: program.exe test.exe
-
-.PHONY: all compileAll
-
 program_main.obj: W:\CSharp\ProjectBuildGenerator\test\source/main.cpp
 	cl /c W:\CSharp\ProjectBuildGenerator\test\source/main.cpp /Fo: program_main.obj
 

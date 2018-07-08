@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Text;
+using System.IO;
 using System;
 
 namespace CodeGen.Make
@@ -13,7 +14,8 @@ namespace CodeGen.Make
         Custom,
     }
 
-    class Command
+    //TODO: Make a command just be a string of the command like, command and parameters
+    /*class Command
     {
         public CommandType Type { get; set; }
         public string[] Files { get; set; }
@@ -43,7 +45,16 @@ namespace CodeGen.Make
             switch(this.Type)
             {
                 case CommandType.CompileExe:
-                
+                    builder.AppendFormat("$(compiler)");
+
+                    foreach (string file in this.Files)
+                    {
+                        builder.Append(" " + file);
+                    }
+
+                    builder.Append(" $(outputExeSwitch) ");
+                    builder.Append(this.OutputName);
+                    builder.Append("\n");
                     break;
 
                 case CommandType.CompileObj:
@@ -70,6 +81,30 @@ namespace CodeGen.Make
 
                 default: throw new Exception();
             }
+        }
+    }*/
+
+    class Command
+    {
+        public string Instruction { get; set; }
+        public string[] Arguments { get; set; }
+
+        public Command() { }
+
+        public Command(string instruction, string[] arguments)
+        {
+            this.Instruction = instruction;
+            this.Arguments = arguments;
+        }
+
+        public void GenCode(StringBuilder builder)
+        {
+            builder.Append(this.Instruction);
+            foreach(string arg in this.Arguments)
+            {
+                builder.Append(" " + arg);
+            }
+            builder.Append("\n");
         }
     }
 
@@ -137,7 +172,7 @@ namespace CodeGen.Make
             variables = new List<Variable>();
             targets = new List<Target>();
 
-            Target all = new Target("all", null, new Command[] { new Command("@echo Select a Target") });
+            Target all = new Target("all", null, new Command[] { new Command("@echo", new string[] { "Select a Target" }) });
             targets.Add(all);
         }
 
@@ -169,11 +204,6 @@ namespace CodeGen.Make
             }
 
             return result.ToString();
-        }
-
-        public void GenCodeSaveToFile(string filePath)
-        {
-            //TODO: Generate code and save it to a file
         }
     }
 }
