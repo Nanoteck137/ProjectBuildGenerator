@@ -4,6 +4,6 @@ set dir=%cd%
 
 pushd %dir%\build
 
-make srcDir=%dir%\source -f %dir%/Makefile.win32 compileAll
+make srcDir=%dir%\source -f %dir%/Makefile.win32 program.exe
 
 popd

@@ -5,8 +5,8 @@ all:
 program_main.obj: W:\CSharp\ProjectBuildGenerator\test\source/main.cpp
 	cl /c W:\CSharp\ProjectBuildGenerator\test\source/main.cpp /Fo: program_main.obj
 
-program.exe: program_main.obj
-	cl program_main.obj /Fe: program.exe
+program.exe: program_main.obj test.lib
+	cl test.lib program_main.obj /Fe: program.exe
 
 test_test1.obj: W:\CSharp\ProjectBuildGenerator\test\test/test1.cpp
 	cl /c W:\CSharp\ProjectBuildGenerator\test\test/test1.cpp /Fo: test_test1.obj

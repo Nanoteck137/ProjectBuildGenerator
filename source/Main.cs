@@ -7,6 +7,7 @@ using System;
 using MoonSharp.Interpreter;
 
 using MakeGen = CodeGen.Make;
+using BatchGen = CodeGen.Batch;
 
 /*
     TODO:
@@ -194,6 +195,7 @@ class Program
     private Dictionary<Mode, Config> configs;
 
     private MakeGen.Generator makeGenerator;
+    private BatchGen.Generator batchGenerator;
 
     public Program(Mode mode)
     {
@@ -201,8 +203,20 @@ class Program
         this.configs = new Dictionary<Mode, Config>();
 
         makeGenerator = new MakeGen.Generator();
+        batchGenerator = new BatchGen.Generator();
 
-        SetupLua();
+        BatchGen.ICommand command = new BatchGen.MakeDirectoryCommand(Path.Combine(Directory.GetCurrentDirectory(), "dirTest"));
+        batchGenerator.AddCommand(command);
+        batchGenerator.AddCommand(new BatchGen.ExistCommand(
+            BatchGen.ExistCondition.IfNot, 
+            Path.Combine(Directory.GetCurrentDirectory(), "dirTest"), 
+            new BatchGen.ICommand[] { 
+                command
+            }
+        ));
+        Console.WriteLine(batchGenerator.GenCode());
+
+        /*SetupLua();
 
         this.script.RunScript("test.lua");
 
@@ -221,7 +235,7 @@ class Program
 
         string code = makeGenerator.GenCode();
         Console.WriteLine(code);
-        File.WriteAllText("GeneratedMake.txt", code);
+        File.WriteAllText("GeneratedMake.txt", code);*/
         Console.Read();
     }
 
