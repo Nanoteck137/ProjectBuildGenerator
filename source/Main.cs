@@ -157,13 +157,6 @@ class Program
 
         Config config = this.configs[mode];
 
-        makeGenerator.AddVariable(new MakeGen.Variable("compiler", config.Compiler));
-        makeGenerator.AddVariable(new MakeGen.Variable("compilerOnlySwitch", config.CompilerOnlySwitch));
-        makeGenerator.AddVariable(new MakeGen.Variable("outputObjSwitch", config.OutputObjSwitch));
-        makeGenerator.AddVariable(new MakeGen.Variable("outputExeSwitch", config.OutputExeSwitch));
-
-        makeGenerator.AddVariable(new MakeGen.Variable("packer", config.Packer));
-
         Project.Project[] projects = Project.ProjectManager.GetProjects();
 
         foreach(Project.Project project in projects)
@@ -233,7 +226,7 @@ class Program
             targetRes.Name = targetName;
             targetRes.Dependencies = new string[] { file };
             targetRes.Commands = new MakeGen.Command[] {
-                new MakeGen.Command("cl", new string[] { "/c", file, "/Fo:", targetName})
+                new MakeGen.Command(config.Compiler, new string[] { config.CompilerOnlySwitch, file, config.OutputObjSwitch, targetName})
             };
 
             generator.AddTarget(targetRes);
@@ -247,13 +240,13 @@ class Program
 
                 List<string> arguments = new List<string>();
                 arguments.AddRange(objFiles);
-                arguments.Add("/Fe:");
+                arguments.Add(config.OutputExeSwitch);
                 arguments.Add(name);
                 
                 projTarget.Name = name;
                 projTarget.Dependencies = objFiles.ToArray();
                 projTarget.Commands = new MakeGen.Command[] {
-                    new MakeGen.Command("cl", arguments.ToArray())
+                    new MakeGen.Command(config.Compiler, arguments.ToArray())
                     //new MakeGen.Command(MakeGen.CommandType.CompileExe, objFiles.ToArray(), name, "")
                 };
             } break;

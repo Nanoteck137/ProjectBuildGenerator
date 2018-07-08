@@ -1,8 +1,3 @@
-compiler=cl
-compilerOnlySwitch=/c
-outputObjSwitch=/Fo:
-outputExeSwitch=/Fe:
-packer=lib
 
 all:
 	@echo Select a Target
