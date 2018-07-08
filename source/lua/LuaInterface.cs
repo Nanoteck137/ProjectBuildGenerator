@@ -63,14 +63,17 @@ namespace LuaInterface
             this.program = program;
         }
 
-        private string[] GetFiles(DynValue filesTable)
+        private string[] GetStringArray(string name, DynValue filesTable)
         {
             if (filesTable.IsNil())
-                throw new Exception();
+                return null;
             if (filesTable.Type != DataType.Table)
-                throw new Exception();
+                throw new Exception(name + " is not a table");
 
             Table table = filesTable.Table;
+            if(table.Length == 0)
+                return null;
+
             List<string> result = new List<string>();
 
             for (int i = 0; i < table.Length; i++)
@@ -90,6 +93,7 @@ namespace LuaInterface
             DynValue name = projectData.Get("Name");
             DynValue type = projectData.Get("Type");
             DynValue files = projectData.Get("Files");
+            DynValue projectDependencies = projectData.Get("ProjectDependencies");
 
             result.Name = LuaHelper.GetStringFromValue(name);
 
@@ -104,7 +108,11 @@ namespace LuaInterface
                 result.Type = Project.Type.Executable;
             }
 
-            result.Files = GetFiles(files);
+            result.Files = GetStringArray("Files", files);
+            if(result.Files == null)
+                throw new Exception("'Files' table is nil");
+
+            result.ProjectDependencies = GetStringArray("ProjectDependencies", projectDependencies);
 
             Project.ProjectManager.AddProject(result);
         }

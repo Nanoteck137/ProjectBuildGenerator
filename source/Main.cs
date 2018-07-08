@@ -62,6 +62,61 @@ class Helper
         }
     }
 
+    public static string GetStaticLibraryFileExt(Mode mode)
+    {
+        switch (mode)
+        {
+            case Mode.Windows: return ".lib";
+            case Mode.Linux: return ".a";
+
+            default: throw new Exception();
+        }
+    }
+
+    public static string GetDynamicLibraryFileExt(Mode mode)
+    {
+        switch (mode)
+        {
+            case Mode.Windows: return ".dll";
+            case Mode.Linux: return ".so";
+
+            default: throw new Exception();
+        }
+    }
+
+    public static string GetDependencyFileExt(Mode mode)
+    {
+        switch (mode)
+        {
+            case Mode.Windows: return ".lib";
+            case Mode.Linux: return ".so";
+
+            default: throw new Exception();
+        }
+    }
+
+    public static string GetDependencyFilePrefix(Mode mode)
+    {
+        switch (mode)
+        {
+            case Mode.Windows: return "";
+            case Mode.Linux: return "lib";
+
+            default: throw new Exception();
+        }
+    }
+
+    public static string GetDependencyFileName(string dep, Mode mode)
+    {
+        switch (mode)
+        {
+            case Mode.Windows: return dep + ".lib";
+            case Mode.Linux: return "-l"+ dep;
+
+            default: throw new Exception();
+        }
+    }
+
     public static string GetObjFileName(Config config, string fileName)
     {
         return Path.GetFileNameWithoutExtension(fileName) + GetObjectFileExt(config.Mode);
@@ -232,34 +287,76 @@ class Program
             generator.AddTarget(targetRes);
         }
 
-        MakeGen.Target projTarget = new MakeGen.Target();
         switch(project.Type)
         {
             case Project.Type.Executable: {
-                string name = project.Name + Helper.GetExecutableFileExt(config.Mode);
-
-                List<string> arguments = new List<string>();
-                arguments.AddRange(objFiles);
-                arguments.Add(config.OutputExeSwitch);
-                arguments.Add(name);
-                
-                projTarget.Name = name;
-                projTarget.Dependencies = objFiles.ToArray();
-                projTarget.Commands = new MakeGen.Command[] {
-                    new MakeGen.Command(config.Compiler, arguments.ToArray())
-                    //new MakeGen.Command(MakeGen.CommandType.CompileExe, objFiles.ToArray(), name, "")
-                };
+                generator.AddTarget(CreateTargetForExecutable(objFiles, generator, project, config));
             } break;
 
             case Project.Type.StaticLibrary:
+                generator.AddTarget(CreateTargetForStaticLibrary(objFiles, generator, project, config));
                 break;
             case Project.Type.DynamicLibrary:
                 break;
 
             default: throw new Exception();
         }
+    }
 
-        generator.AddTarget(projTarget);
+    private MakeGen.Target CreateTargetForStaticLibrary(List<string> objFiles, MakeGen.Generator generator, Project.Project project, Config config)
+    {
+        MakeGen.Target target = new MakeGen.Target();
+
+        string name = project.Name + Helper.GetStaticLibraryFileExt(config.Mode);
+
+        List<string> arguments = new List<string>();
+        arguments.Add("/out:" + name);
+        arguments.AddRange(objFiles);
+
+        target.Name = name;
+        target.Dependencies = objFiles.ToArray();
+        target.Commands = new MakeGen.Command[] {
+            new MakeGen.Command("lib", arguments.ToArray())
+        };
+
+        return target;
+    }
+
+    private MakeGen.Target CreateTargetForExecutable(List<string> objFiles, MakeGen.Generator generator, Project.Project project, Config config)
+    {
+        MakeGen.Target target = new MakeGen.Target();
+
+        string name = project.Name + Helper.GetExecutableFileExt(config.Mode);
+
+        List<string> arguments = new List<string>();
+
+        if (project.ProjectDependencies != null)
+        {
+            foreach (string dep in project.ProjectDependencies)
+            {
+                arguments.Add(Helper.GetDependencyFileName(dep, config.Mode));
+            }
+        }
+
+        arguments.AddRange(objFiles);
+        arguments.Add(config.OutputExeSwitch);
+        arguments.Add(name);
+
+        if(project.ProjectDependencies != null)
+        {
+            foreach(string dep in project.ProjectDependencies)
+            {
+                objFiles.Add(Helper.GetDependencyFilePrefix(config.Mode) + dep + Helper.GetDependencyFileExt(config.Mode));
+            }
+        }
+
+        target.Name = name;
+        target.Dependencies = objFiles.ToArray();
+        target.Commands = new MakeGen.Command[] {
+            new MakeGen.Command(config.Compiler, arguments.ToArray())
+        };
+
+        return target;
     }
 
     private void SetupLua()

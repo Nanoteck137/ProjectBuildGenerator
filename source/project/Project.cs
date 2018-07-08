@@ -16,6 +16,7 @@ namespace Project
         public string Name { get; set; }
         public Type Type { get; set; }
         public string[] Files { get; set; }
+        public string[] ProjectDependencies { get; set; }
 
         public Project() { }
     }

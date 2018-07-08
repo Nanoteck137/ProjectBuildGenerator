@@ -17,6 +17,7 @@ function CreateProgramProject()
         Name = "program",
         Type = ProjectType.Executable,
         Files = files,
+        ProjectDependencies = { "test" },
     };
     
     Project.AddProject(project);    
@@ -27,7 +28,7 @@ function CreateTestProject()
 
     local project = {
         Name = "test",
-        Type = ProjectType.Executable,
+        Type = ProjectType.StaticLibrary,
         Files = files,
     };
     
