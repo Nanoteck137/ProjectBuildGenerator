@@ -5,7 +5,6 @@ namespace Project
 {
     enum Type
     {
-        Unknown,
         Executable,
         StaticLibrary,
         DynamicLibrary,
@@ -19,22 +18,13 @@ namespace Project
         public string[] ProjectDependencies { get; set; }
 
         public Project() { }
-    }
 
-    class ProjectManager
-    {
-        private static List<Project> projects = new List<Project>();
-
-        private ProjectManager() { }
-
-        public static void AddProject(Project project)
+        public Project(string name, Type type, string[] files, string[] projectDependencies)
         {
-            projects.Add(project);
-        }
-
-        public static Project[] GetProjects() 
-        {
-            return projects.ToArray();
+            this.Name = name;
+            this.Type = type;
+            this.Files = files;
+            this.ProjectDependencies = projectDependencies;
         }
     }
 }

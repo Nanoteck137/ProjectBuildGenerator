@@ -1,6 +1,10 @@
 Restructure code:
 
+    Program:
+        Init Lua Script - And get the projects from lua
+
     Lua:
+        Refactor the lua api: AddProject() -> CreateProject()
         Generate project objects
 
     Share:

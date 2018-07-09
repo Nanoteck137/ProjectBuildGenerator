@@ -6,9 +6,6 @@ using System;
 
 using MoonSharp.Interpreter;
 
-using MakeGen = CodeGen.Make;
-using BatchGen = CodeGen.Batch;
-
 /*
     TODO:
      - Need to redo the code generator for make files
@@ -24,213 +21,10 @@ enum Mode
     Linux,
 }
 
-class Config
+/*class Program
 {
-    public string Compiler { get; set; }
-    public string CompilerOnlySwitch { get; set; }
-    public string OutputObjSwitch { get; set; }
-    public string OutputExeSwitch { get; set; }
-
-    public string Packer { get; set; }
-    public Mode Mode { get; set; }
-
-    public Config() { }
-}
-
-class Helper
-{
-    private Helper() { }
-
-    public static string GetExecutableFileExt(Mode mode)
-    {
-        switch(mode)
-        {
-            case Mode.Windows: return ".exe";
-            case Mode.Linux: return "";
-
-            default: throw new Exception();
-        }
-    }
-
-    public static string GetObjectFileExt(Mode mode)
-    {
-        switch(mode)
-        {
-            case Mode.Windows: return ".obj";
-            case Mode.Linux: return ".o";
-
-            default: throw new Exception();
-        }
-    }
-
-    public static string GetStaticLibraryFileExt(Mode mode)
-    {
-        switch (mode)
-        {
-            case Mode.Windows: return ".lib";
-            case Mode.Linux: return ".a";
-
-            default: throw new Exception();
-        }
-    }
-
-    public static string GetDynamicLibraryFileExt(Mode mode)
-    {
-        switch (mode)
-        {
-            case Mode.Windows: return ".dll";
-            case Mode.Linux: return ".so";
-
-            default: throw new Exception();
-        }
-    }
-
-    public static string GetDependencyFileExt(Mode mode)
-    {
-        switch (mode)
-        {
-            case Mode.Windows: return ".lib";
-            case Mode.Linux: return ".so";
-
-            default: throw new Exception();
-        }
-    }
-
-    public static string GetDependencyFilePrefix(Mode mode)
-    {
-        switch (mode)
-        {
-            case Mode.Windows: return "";
-            case Mode.Linux: return "lib";
-
-            default: throw new Exception();
-        }
-    }
-
-    public static string GetDependencyFileName(string dep, Mode mode)
-    {
-        switch (mode)
-        {
-            case Mode.Windows: return dep + ".lib";
-            case Mode.Linux: return "-l"+ dep;
-
-            default: throw new Exception();
-        }
-    }
-
-    public static string GetObjFileName(Config config, string fileName)
-    {
-        return Path.GetFileNameWithoutExtension(fileName) + GetObjectFileExt(config.Mode);
-    }
-
-    public static string CreateTargetCode(Config config, string name, bool objectCompile, string dependencies)
-    {
-        if(objectCompile)
-            return string.Format("{0}{1}: {2}", name, GetObjectFileExt(config.Mode), dependencies);
-        return string.Format("{0}{1}: {2}", name, GetExecutableFileExt(config.Mode), dependencies);
-    }
-
-    public static string CreateCompilerCode(Config config, bool compilerOnly, string files)
-    {
-        if(compilerOnly)
-            return string.Format("{0} {1} {2}", config.Compiler, config.CompilerOnlySwitch, files);
-        return string.Format("{0}{1}", config.Compiler, files);
-    }
-
-    public static string GetDefaultCompiler(Mode mode)
-    {
-        switch(mode)
-        {
-            case Mode.Windows: return "cl";
-            case Mode.Linux: return "clang++";
-            default: throw new Exception();
-        }
-    }
-
-    public static string GetDefaultCompilerOnlySwitch(Mode mode)
-    {
-        switch (mode)
-        {
-            case Mode.Windows: return "/c";
-            case Mode.Linux: return "-c";
-            default: throw new Exception();
-        }
-    }
-
-    public static string GetDefaultOutputObjSwitch(Mode mode)
-    {
-        switch (mode)
-        {
-            case Mode.Windows: return "/Fo:";
-            case Mode.Linux: return "-o";
-            default: throw new Exception();
-        }
-    }
-
-    public static string GetDefaultOutputExeSwitch(Mode mode)
-    {
-        switch (mode)
-        {
-            case Mode.Windows: return "/Fe:";
-            case Mode.Linux: return "-o";
-            default: throw new Exception();
-        }
-    }
-
-    public static string GetDefaultPacker(Mode mode)
-    {
-        switch (mode)
-        {
-            case Mode.Windows: return "lib";
-            case Mode.Linux: return "ar";
-            default: throw new Exception();
-        }
-    }
-}
-
-class Program
-{
-    private LuaScript script;
-
-    private Dictionary<Mode, Config> configs;
-
-    private MakeGen.Generator makeGenerator;
-
     public Program(Mode mode)
     {
-        this.script = new LuaScript();
-        this.configs = new Dictionary<Mode, Config>();
-
-        makeGenerator = new MakeGen.Generator();
-        /*batchGenerator = new BatchGen.Generator();
-
-        string dirTestPath = Path.Combine(Directory.GetCurrentDirectory(), "dirTest");
-        string buildDirPath = Path.Combine(Directory.GetCurrentDirectory(), "build");
-
-        BatchGen.CommandList commandList = new BatchGen.CommandList();
-        commandList.AddCommand(new BatchGen.CustomCommand("mkdir", new string[] { dirTestPath }));
-
-        BatchGen.CommandList buildCommandList = BatchHelper.CreateCommandList(null);
-        buildCommandList.AddCommand(BatchHelper.CreateCustomCommand("make", "-f", Directory.GetCurrentDirectory()));
-
-        batchGenerator.AddCommand(new BatchGen.PushDirectoryCommand(buildDirPath, buildCommandList));
-
-        batchGenerator.AddCommand(new BatchGen.ExistCommand(
-            BatchGen.ExistCondition.IfNot, dirTestPath, commandList
-        ));*/
-
-        SetupLua();
-
-        this.script.RunScript("test.lua");
-
-        this.script.CallFunction("Init", mode);
-
-        ProcessConfig(mode);
-
-        Config config = this.configs[mode];
-
-        Project.Project[] projects = Project.ProjectManager.GetProjects();
-
         foreach(Project.Project project in projects)
         {
             CreateMakeTargetsFromProject(makeGenerator, project, config);
@@ -251,55 +45,9 @@ class Program
         Console.WriteLine();
         Console.WriteLine();
         Console.WriteLine(batchCode);
-
-        Console.Read();
     }
 
-    private void ProcessConfig(Mode mode)
-    {
-        if(!this.configs.ContainsKey(mode))
-        {
-                Config config = new Config();
-                config.Compiler = Helper.GetDefaultCompiler(mode);
-                config.CompilerOnlySwitch = Helper.GetDefaultCompilerOnlySwitch(mode);
-                config.OutputObjSwitch = Helper.GetDefaultOutputObjSwitch(mode);
-                config.OutputExeSwitch = Helper.GetDefaultOutputExeSwitch(mode);
-                config.Packer = Helper.GetDefaultPacker(mode);
-
-            config.Mode = mode;
-
-            this.configs.Add(mode, config);
-        }
-
-        Config currentConfig = this.configs[mode];
-        if(currentConfig.Compiler == null || currentConfig.Compiler == String.Empty)
-        {
-            currentConfig.Compiler = Helper.GetDefaultCompiler(mode);
-        }
-
-        if(currentConfig.CompilerOnlySwitch == null || currentConfig.CompilerOnlySwitch == String.Empty)
-        {
-            currentConfig.CompilerOnlySwitch = Helper.GetDefaultCompilerOnlySwitch(mode);
-        }
-
-        if(currentConfig.OutputObjSwitch == null || currentConfig.OutputObjSwitch == String.Empty)
-        {
-            currentConfig.OutputObjSwitch = Helper.GetDefaultOutputObjSwitch(mode);
-        }
-
-        if(currentConfig.OutputExeSwitch == null || currentConfig.OutputExeSwitch == String.Empty)
-        {
-            currentConfig.OutputExeSwitch = Helper.GetDefaultOutputExeSwitch(mode);
-        }
-
-        if(currentConfig.Packer == null || currentConfig.Packer == String.Empty)
-        {
-            currentConfig.Packer = Helper.GetDefaultPacker(mode);
-        }
-
-    }
-
-    private void CreateMakeTargetsFromProject(MakeGen.Generator generator, Project.Project project, Config config)
+/*    private void CreateMakeTargetsFromProject(MakeGen.Generator generator, Project.Project project, Config config)
     {
         List<string> objFiles = new List<string>();
         foreach(string file in project.Files)
@@ -389,25 +137,9 @@ class Program
         return target;
     }
 
-    private void SetupLua()
-    {
-        this.script.AddEnumType("Mode", typeof(Mode));
-        this.script.AddEnumType("ProjectType", typeof(Project.Type));
-
-        LuaInterface.ProjectInterface projectInterface = new LuaInterface.ProjectInterface(this);
-        this.script.AddInterface("Project", projectInterface);
-
-        LuaInterface.ConfigInterface configInterface = new LuaInterface.ConfigInterface(this);
-        this.script.AddInterface("Config", configInterface);
-    }
-
-    public void AddConfig(Mode mode, Config config)
-    {
-        this.configs.Add(mode, config);
-    }
-
     public static void Main(string[] args)
     {
+        //TODO: Redesign how the command arguments are passed
         Mode mode = Mode.Unknown;
         if(args.Length == 1)
         {
@@ -422,5 +154,14 @@ class Program
         UserData.RegisterAssembly(System.Reflection.Assembly.GetExecutingAssembly());
 
         new Program(mode);
+    }
+}*/
+
+class MainClass
+{
+    public static void Main(string[] args)
+    {
+        Console.WriteLine("Hello World");
+        Console.ReadLine();
     }
 }

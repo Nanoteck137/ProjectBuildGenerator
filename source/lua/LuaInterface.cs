@@ -3,9 +3,11 @@ using System;
 
 using MoonSharp.Interpreter;
 
-namespace LuaInterface
+//TODO: Revisit this when i want the lua integration to work
+
+namespace Lua.Interface
 {
-    class LuaHelper
+/*    class LuaHelper
     {
         private LuaHelper() { }
 
@@ -18,39 +20,6 @@ namespace LuaInterface
             
             return value.String;
         }        
-    }
-
-    [MoonSharpUserData]
-    class ConfigInterface
-    {
-        private Program program;
-
-        public ConfigInterface(Program program)
-        {
-            this.program = program;
-        }
-
-        public void AddConfig(Mode mode, Table configData)
-        {
-            Config result = new Config();
-
-            DynValue compiler = configData.Get("Compiler");
-            DynValue compilerOnlySwitch = configData.Get("CompilerOnlySwitch");
-            DynValue outputObjSwitch = configData.Get("OutputObjSwitch");
-            DynValue outputExeSwitch = configData.Get("OutputExeSwitch");
-
-            DynValue packer = configData.Get("Packer");
-
-            result.Compiler = compiler.String;
-            result.CompilerOnlySwitch = compilerOnlySwitch.String;
-            result.OutputObjSwitch = outputObjSwitch.String;
-            result.OutputExeSwitch = outputExeSwitch.String;
-            result.Packer = packer.String;
-
-            result.Mode = mode;
-
-            program.AddConfig(mode, result);
-        }
     }
 
     [MoonSharpUserData]
@@ -88,34 +57,34 @@ namespace LuaInterface
 
         public void AddProject(Table projectData)
         {
-            Project.Project result = new Project.Project();
+            DynValue nameLuaValue = projectData.Get("Name");
+            DynValue typeLuaValue = projectData.Get("Type");
+            DynValue filesLuaValue = projectData.Get("Files");
+            DynValue projectDependenciesLuaValue = projectData.Get("ProjectDependencies");
 
-            DynValue name = projectData.Get("Name");
-            DynValue type = projectData.Get("Type");
-            DynValue files = projectData.Get("Files");
-            DynValue projectDependencies = projectData.Get("ProjectDependencies");
+            result.Name = LuaHelper.GetStringFromValue(nameLuaValue);
 
-            result.Name = LuaHelper.GetStringFromValue(name);
-
-            if (!type.IsNil())
+            if (!typeLuaValue.IsNil())
             {
-                if (type.Type != DataType.Number)
+                if (typeLuaValue.Type != DataType.Number)
                     throw new Exception("Type needs to be a number/enum value");
-                result.Type = (Project.Type)type.Number;
+                result.Type = (Project.Type)typeLuaValue.Number;
             }
             else
             {
                 result.Type = Project.Type.Executable;
             }
 
-            result.Files = GetStringArray("Files", files);
+            result.Files = GetStringArray("Files", filesLuaValue);
             if(result.Files == null)
                 throw new Exception("'Files' table is nil");
 
-            result.ProjectDependencies = GetStringArray("ProjectDependencies", projectDependencies);
+            result.ProjectDependencies = GetStringArray("ProjectDependencies", projectDependenciesLuaValue);
 
-            Project.ProjectManager.AddProject(result);
+            //TODO: Add the project to the program
+            //this.Program.AddProject(result);
+            //Project.ProjectManager.AddProject(result);
         }
 
-    }
+    }*/
 }
