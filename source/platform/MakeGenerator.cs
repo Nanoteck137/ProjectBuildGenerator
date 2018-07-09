@@ -3,7 +3,7 @@ using System.Text;
 using System.IO;
 using System;
 
-namespace CodeGen.Make
+namespace Make 
 {
     class Command
     {

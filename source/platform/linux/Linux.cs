@@ -1,12 +1,9 @@
 using System;
 
-namespace Platform.Linux
+class LinuxProgram
 {
-    class Program
+    public LinuxProgram()
     {
-        public Program()
-        {
-            
-        }
+        
     }
 }

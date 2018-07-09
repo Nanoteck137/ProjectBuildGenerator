@@ -1,4 +1,5 @@
 Restructure code:
+    Later go over the code and handle all the errors and exception in a better way
 
     Program:
         Init Lua Script - And get the projects from lua
