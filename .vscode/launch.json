@@ -11,7 +11,7 @@
             // "preLaunchTask": "Dotnet - Build",
             "program": "${workspaceFolder}/bin/x64/Debug/netcoreapp2.1/ProjectBuildGenerator.dll",
             "args": ["-win32"],
-            "cwd": "${workspaceFolder}/test",
+            "cwd": "${workspaceFolder}/test2",
             "console": "externalTerminal",
             "stopAtEntry": false,
             "internalConsoleOptions": "openOnSessionStart"

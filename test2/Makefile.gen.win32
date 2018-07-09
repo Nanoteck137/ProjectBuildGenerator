@@ -1,0 +1,19 @@
+
+all:
+	@echo Select a Target
+
+program_main.obj: C:\Programming\ProjectBuildGenerator\test2\source/main.cpp
+	cl /c C:\Programming\ProjectBuildGenerator\test2\source/main.cpp /Fo: program_main.obj
+
+program.exe: program_main.obj test.lib
+	cl test.lib program_main.obj /Fe: program.exe
+
+test_test1.obj: C:\Programming\ProjectBuildGenerator\test2\test/test1.cpp
+	cl /c C:\Programming\ProjectBuildGenerator\test2\test/test1.cpp /Fo: test_test1.obj
+
+test_test2.obj: C:\Programming\ProjectBuildGenerator\test2\test/test2.cpp
+	cl /c C:\Programming\ProjectBuildGenerator\test2\test/test2.cpp /Fo: test_test2.obj
+
+test.lib: test_test1.obj test_test2.obj
+	lib /out:test.lib test_test1.obj test_test2.obj
+

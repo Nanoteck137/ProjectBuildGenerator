@@ -245,7 +245,7 @@ class Program
 
         ProjectBatch batch = new ProjectBatch(projects);
         string batchCode = batch.CreateBatchCode(buildDir, makeFilePath);
-        File.WriteAllText("build.gen.bat", makeCode);
+        File.WriteAllText("build.gen.bat", batchCode);
 
         Console.WriteLine(makeCode);
         Console.WriteLine();
