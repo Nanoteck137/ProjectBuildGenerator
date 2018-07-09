@@ -151,7 +151,6 @@ enum Mode
                 throw new Exception();
         }
 
-        UserData.RegisterAssembly(System.Reflection.Assembly.GetExecutingAssembly());
 
         new Program(mode);
     }
@@ -161,7 +160,10 @@ class MainClass
 {
     public static void Main(string[] args)
     {
-        new WindowsProgram("");
+        UserData.RegisterAssembly(System.Reflection.Assembly.GetExecutingAssembly());
+
+        string luaPath = Path.Combine(Directory.GetCurrentDirectory(), "test.lua");
+        new WindowsProgram(luaPath);
         Console.ReadLine();
     }
 }

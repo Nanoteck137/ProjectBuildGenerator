@@ -3,23 +3,38 @@ using System;
 
 /*this.script = new LuaScript();
 
-this.script.AddEnumType("ProjectType", typeof(Project.Type));
 
-ProjectInterface projectInterface = new ProjectInterface();
-this.script.AddInterface("Project", projectInterface);
 
-this.script.RunScript(luaConfigPath);
-this.script.CallFunction("Init");*/
+*/
 
 public abstract class Program
 {
     //TODO: We want the lua script to live here
     //TODO: We want a list of projects
+    private string luaFilePath;
+    private LuaScript script;
     protected List<Project> projects;
 
     protected Program(string luaConfigPath)
     {
+        this.luaFilePath = luaConfigPath;
+
         projects = new List<Project>();
+        script = new LuaScript();
+    }
+
+    protected void SetupLua()
+    {
+        this.script.AddEnumType("ProjectType", typeof(ProjectType));
+
+        LuaProjectInterface projectInterface = new LuaProjectInterface(this);
+        this.script.AddInterface("Project", projectInterface);
+    }
+
+    protected void InitLuaScript()
+    {
+        this.script.RunScript(luaFilePath);
+        this.script.CallFunction("Init");
     }
 
     public void AddProject(Project project)

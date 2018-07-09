@@ -2,9 +2,6 @@ using System.Collections.Generic;
 using System.IO;
 using System;
 
-using Lua;
-using Lua.Interface;
-
 class WindowsProgram : Program
 {
     private Make.Generator makeGenerator;
@@ -14,14 +11,8 @@ class WindowsProgram : Program
     {
         makeGenerator = new Make.Generator();
 
-        string[] testFiles = LuaSystemLibrary.GetAllFilesWithExt(Path.Combine(Directory.GetCurrentDirectory(), "test"), "*.cpp");
-        string[] sourceFiles = LuaSystemLibrary.GetAllFilesWithExt(Path.Combine(Directory.GetCurrentDirectory(), "source"), "*.cpp");
-
-        Project testProject = new Project("test", ProjectType.StaticLibrary, testFiles, null);
-        AddProject(testProject);
-
-        Project programProject = new Project("program", ProjectType.Executable, sourceFiles, new string[] { testProject.Name });
-        AddProject(programProject);
+        SetupLua();
+        InitLuaScript();
 
         CreateMakeTarget();
 
@@ -121,9 +112,4 @@ class WindowsMake
 
         return target;
     }
-}
-
-class WindowsBatch
-{
-    private WindowsBatch() { }
 }

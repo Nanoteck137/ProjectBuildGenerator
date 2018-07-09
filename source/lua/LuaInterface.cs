@@ -5,86 +5,83 @@ using MoonSharp.Interpreter;
 
 //TODO: Revisit this when i want the lua integration to work
 
-namespace Lua.Interface
+class LuaHelper
 {
-/*    class LuaHelper
-    {
-        private LuaHelper() { }
+    private LuaHelper() { }
 
-        public static string GetStringFromValue(DynValue value)
-        {
-            if(value.IsNil())
-                throw new Exception("Value cant be nil"); //TODO: Better error handling
-            if(value.Type != DataType.String)
-                throw new Exception("Value is not a string"); //TODO: Better error handling
-            
-            return value.String;
-        }        
+    public static string GetStringFromValue(DynValue value)
+    {
+        if(value.IsNil())
+            throw new Exception("Value cant be nil"); //TODO: Better error handling
+        if(value.Type != DataType.String)
+            throw new Exception("Value is not a string"); //TODO: Better error handling
+        
+        return value.String;
+    }        
+}
+
+[MoonSharpUserData]
+class LuaProjectInterface
+{
+    private Program program;
+
+    public LuaProjectInterface(Program program)
+    {
+        this.program = program;
     }
 
-    [MoonSharpUserData]
-    class ProjectInterface
+    private string[] GetStringArray(string name, DynValue filesTable)
     {
-        private Program program;
+        if (filesTable.IsNil())
+            return null;
+        if (filesTable.Type != DataType.Table)
+            throw new Exception(name + " is not a table");
 
-        public ProjectInterface(Program program)
+        Table table = filesTable.Table;
+        if(table.Length == 0)
+            return null;
+
+        List<string> result = new List<string>();
+
+        for (int i = 0; i < table.Length; i++)
         {
-            this.program = program;
+            string value = table.Get(i + 1).String;
+            if (value != null)
+                result.Add(value);
         }
 
-        private string[] GetStringArray(string name, DynValue filesTable)
+        return result.ToArray();
+    }
+
+    public void AddProject(Table projectData)
+    {
+        Project result = new Project();
+
+        DynValue name = projectData.Get("Name");
+        DynValue type = projectData.Get("Type");
+        DynValue filesTable = projectData.Get("Files");
+        DynValue projectDependencies = projectData.Get("ProjectDependencies");
+
+        result.Name = LuaHelper.GetStringFromValue(name);
+
+        if (!type.IsNil())
         {
-            if (filesTable.IsNil())
-                return null;
-            if (filesTable.Type != DataType.Table)
-                throw new Exception(name + " is not a table");
-
-            Table table = filesTable.Table;
-            if(table.Length == 0)
-                return null;
-
-            List<string> result = new List<string>();
-
-            for (int i = 0; i < table.Length; i++)
-            {
-                string value = table.Get(i + 1).String;
-                if (value != null)
-                    result.Add(value);
-            }
-
-            return result.ToArray();
+            if (type.Type != DataType.Number)
+                throw new Exception("Type needs to be a number/enum value");
+            result.Type = (ProjectType)type.Number;
+        }
+        else
+        {
+            result.Type = ProjectType.Executable;
         }
 
-        public void AddProject(Table projectData)
-        {
-            DynValue nameLuaValue = projectData.Get("Name");
-            DynValue typeLuaValue = projectData.Get("Type");
-            DynValue filesLuaValue = projectData.Get("Files");
-            DynValue projectDependenciesLuaValue = projectData.Get("ProjectDependencies");
+        result.Files = GetStringArray("Files", filesTable);
+        if(result.Files == null)
+            throw new Exception("'Files' table is nil");
 
-            result.Name = LuaHelper.GetStringFromValue(nameLuaValue);
+        result.ProjectDependencies = GetStringArray("ProjectDependencies", projectDependencies);
 
-            if (!typeLuaValue.IsNil())
-            {
-                if (typeLuaValue.Type != DataType.Number)
-                    throw new Exception("Type needs to be a number/enum value");
-                result.Type = (Project.Type)typeLuaValue.Number;
-            }
-            else
-            {
-                result.Type = Project.Type.Executable;
-            }
+        this.program.AddProject(result);
+    }
 
-            result.Files = GetStringArray("Files", filesLuaValue);
-            if(result.Files == null)
-                throw new Exception("'Files' table is nil");
-
-            result.ProjectDependencies = GetStringArray("ProjectDependencies", projectDependenciesLuaValue);
-
-            //TODO: Add the project to the program
-            //this.Program.AddProject(result);
-            //Project.ProjectManager.AddProject(result);
-        }
-
-    }*/
 }

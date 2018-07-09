@@ -7,29 +7,7 @@ System.GetAllFilesWithExt(dir, ext);
 System.GetDirectoryPath(); - Gets the current working directory of the app
 System.GetCurrentPath(relativePath); - Combines the current directory and the relative path
 
-General:
-
-Mode enum = {
-    Unknown,
-    Windows,
-    Linux,
-}
-
-Config API:
-
-config table = {
-    Compiler = string,
-    CompilerOnlySwitch = string,
-    Packer = string,
-}
-
-Config.AddConfig(mode, config);
-
 Project API:
-
-file table = {
-    SourceFile = string,
-}
 
 ProjectType enum = {
     None = 0,
@@ -39,7 +17,7 @@ ProjectType enum = {
 
 project table = {
     Name = string,
-    Files = array[file table],
+    Files = array[string],
     Type = project_type,
 }
 
