@@ -203,20 +203,24 @@ class Program
         this.configs = new Dictionary<Mode, Config>();
 
         makeGenerator = new MakeGen.Generator();
-        batchGenerator = new BatchGen.Generator();
+        /*batchGenerator = new BatchGen.Generator();
 
-        BatchGen.ICommand command = new BatchGen.MakeDirectoryCommand(Path.Combine(Directory.GetCurrentDirectory(), "dirTest"));
-        batchGenerator.AddCommand(command);
+        string dirTestPath = Path.Combine(Directory.GetCurrentDirectory(), "dirTest");
+        string buildDirPath = Path.Combine(Directory.GetCurrentDirectory(), "build");
+
+        BatchGen.CommandList commandList = new BatchGen.CommandList();
+        commandList.AddCommand(new BatchGen.CustomCommand("mkdir", new string[] { dirTestPath }));
+
+        BatchGen.CommandList buildCommandList = BatchHelper.CreateCommandList(null);
+        buildCommandList.AddCommand(BatchHelper.CreateCustomCommand("make", "-f", Directory.GetCurrentDirectory()));
+
+        batchGenerator.AddCommand(new BatchGen.PushDirectoryCommand(buildDirPath, buildCommandList));
+
         batchGenerator.AddCommand(new BatchGen.ExistCommand(
-            BatchGen.ExistCondition.IfNot, 
-            Path.Combine(Directory.GetCurrentDirectory(), "dirTest"), 
-            new BatchGen.ICommand[] { 
-                command
-            }
-        ));
-        Console.WriteLine(batchGenerator.GenCode());
+            BatchGen.ExistCondition.IfNot, dirTestPath, commandList
+        ));*/
 
-        /*SetupLua();
+        SetupLua();
 
         this.script.RunScript("test.lua");
 
@@ -233,9 +237,22 @@ class Program
             CreateMakeTargetsFromProject(makeGenerator, project, config);
         }
 
-        string code = makeGenerator.GenCode();
-        Console.WriteLine(code);
-        File.WriteAllText("GeneratedMake.txt", code);*/
+        string makeCode = makeGenerator.GenCode();
+        File.WriteAllText("Makefile.gen.win32", makeCode);
+
+        string buildDir = Path.Combine(Directory.GetCurrentDirectory(), "build");
+        string makeFilePath = Path.Combine(Directory.GetCurrentDirectory(), "Makefile.win32.gen");
+
+        ProjectBatch batch = new ProjectBatch(projects);
+        string batchCode = batch.CreateBatchCode(buildDir, makeFilePath);
+        File.WriteAllText("build.gen.bat", makeCode);
+
+        Console.WriteLine(makeCode);
+        Console.WriteLine();
+        Console.WriteLine();
+        Console.WriteLine();
+        Console.WriteLine(batchCode);
+
         Console.Read();
     }
 

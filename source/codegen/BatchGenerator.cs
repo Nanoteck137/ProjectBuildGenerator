@@ -2,6 +2,29 @@ using System.Collections.Generic;
 using System.Text;
 using System;
 
+using CodeGen.Batch;
+
+class BatchHelper
+{
+    private BatchHelper() { }
+
+    public static ICommand CreateExistCommand(string path, ExistCondition condition, CommandList commands)
+    {
+        return new ExistCommand(condition, path, commands);
+    }
+
+    public static ICommand CreateCustomCommand(string command, params string[] args)
+    {
+        return new CustomCommand(command, args);
+    }
+
+    public static CommandList CreateCommandList(params ICommand[] commands)
+    {
+        return new CommandList(commands);
+    }
+}
+
+
 namespace CodeGen.Batch 
 {
     interface ICommand
@@ -9,20 +32,59 @@ namespace CodeGen.Batch
         void GenCode(StringBuilder builder);
     }
 
+    class CommandList
+    {
+        public List<ICommand> commands;
+
+        public CommandList() 
+        {
+            this.commands = new List<ICommand>();
+        }
+
+        public CommandList(ICommand[] commands) 
+        { 
+            this.commands = new List<ICommand>();
+            if(commands != null)
+                this.commands.AddRange(commands);
+        }
+
+        public void AddCommand(ICommand command)
+        {
+            this.commands.Add(command);
+        }
+
+        public void AddCommandList(CommandList list)
+        {
+            this.commands.AddRange(list.commands);
+        }
+
+        public void GenCode(StringBuilder builder, string prefix = "", string suffix = "")
+        {
+            foreach(ICommand command in this.commands)
+            {
+                builder.Append(prefix);
+                command.GenCode(builder);
+                builder.Append(suffix);
+            }
+        }
+    }
+
     class PushDirectoryCommand : ICommand
     {
-        private ICommand[] commands;
+        private string dirPath;
+        private CommandList commands;
 
-        public PushDirectoryCommand(ICommand[] commands)
+        public PushDirectoryCommand(string dirPath, CommandList commands)
         {
+            this.dirPath = dirPath;
             this.commands = commands;
         }
 
         public void GenCode(StringBuilder builder)
         {
-            //pushd
-            // Gen code for commands
-            //popd
+            builder.AppendFormat("pushd \"{0}\"\n", this.dirPath);
+            commands.GenCode(builder, "\t");
+            builder.Append("popd\n");
         }
     }
 
@@ -36,9 +98,9 @@ namespace CodeGen.Batch
     {
         private ExistCondition condition;
         private string path;
-        private ICommand[] commands;
+        private CommandList commands;
 
-        public ExistCommand(ExistCondition condition, string path, ICommand[] commands)
+        public ExistCommand(ExistCondition condition, string path, CommandList commands)
         {
             this.condition = condition;
             this.path = path;
@@ -53,43 +115,52 @@ namespace CodeGen.Batch
             builder.AppendFormat("exist \"{0}\" ", this.path);
             builder.Append("(\n");
 
-            foreach(ICommand command in this.commands)
-            {
-                builder.Append("\t");
-                command.GenCode(builder);
-            }
+            this.commands.GenCode(builder, "\t");
 
             builder.Append(")\n");
         }
     }
 
-    class MakeDirectoryCommand : ICommand
+    class CustomCommand : ICommand
     {
-        private string path;
+        private string command;
+        private string[] arguments;
 
-        public MakeDirectoryCommand(string path)
+        public CustomCommand(string command, string[] args)
         {
-            this.path = path;
+            this.command = command;
+            this.arguments = args;
         }
 
         public void GenCode(StringBuilder builder)
         {
-            builder.AppendFormat("mkdir {0}\n", path);
+            builder.Append(command);
+            foreach(string arg in this.arguments)
+            {
+                builder.Append(" " + arg);
+            }
+
+            builder.Append("\n");
         }
     }
 
     class Generator
     {
-        public List<ICommand> commands;
+        public CommandList commands;
 
         public Generator() 
         {
-            commands = new List<ICommand>();
+            commands = new CommandList();
         }
 
         public void AddCommand(ICommand command)
         {
-            commands.Add(command);
+            this.commands.AddCommand(command);
+        }
+
+        public void AddCommandList(CommandList list)
+        {
+            this.commands.AddCommandList(list);
         }
 
         public string GenCode()
@@ -98,11 +169,7 @@ namespace CodeGen.Batch
 
             builder.Append("@echo off\n\n");
 
-            foreach(ICommand command in commands)
-            {
-                command.GenCode(builder);
-            }
-
+            this.commands.GenCode(builder, "", "\n");
             return builder.ToString();
         }        
     }
