@@ -2,26 +2,16 @@ Restructure code:
     Later go over the code and handle all the errors and exception in a better way
 
     Program:
+        Windows - Done
         Init Lua Script - And get the projects from lua
 
     Lua:
-        Refactor the lua api: AddProject() -> CreateProject()
-        Generate project objects
-
-    Share:
-        Project: Processed data about the project,
-            Then send it to one of the platform generators 
-
-    Windows: Takes the project and generates a batch script and make code
-        Batch script generator: Generate the build script
-        Generator specific make code: Use the make generator but with diffrent commands
+        Need better error handling in there
 
     Linux: Takes the project and generates a batch script and make code
-        Shell script generator: Generate the build script
         Generate specific make code: Use the make generator but with diffrent commands
 
-    New folder structure:
-        - Source
-            - Platform
-                - Windows
-                - Linux
+    Main: 
+     - Command line arguments
+        Need to be parsed
+    

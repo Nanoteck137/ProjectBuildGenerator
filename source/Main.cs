@@ -158,12 +158,32 @@ enum Mode
 
 class MainClass
 {
-    public static void Main(string[] args)
+    /*
+        Structure of the Command line arguments
+        [options]: --windows, --linux and other options
+                 : --buildDirPath=path - This is the path to where the build files is gonna live, this can be a absolute path or relative.
+                 : --workspaceDirPath=path - This is the path where lua's Working directory is, 
+                    this can be a absolute path or relative 
+                    this is gonna get resolved later with Path.GetFullPath().
+        luaFilePath: C:\CSharp\ProjectBuildGenerator\Test2\test.lua
+     */
+    public static void Main(string[] commandLine)
     {
+        for(int index = 0; 
+            index < commandLine.Length; 
+            index++)
+        {
+            if(index == commandLine.Length - 1)
+            {
+                //Last argument
+                Console.WriteLine("Last Argument: {0}", commandLine[index]);
+            }
+        }
+
         UserData.RegisterAssembly(System.Reflection.Assembly.GetExecutingAssembly());
 
         string luaPath = Path.Combine(Directory.GetCurrentDirectory(), "test.lua");
-        new WindowsProgram(luaPath);
+        //new WindowsProgram(luaPath);
         Console.ReadLine();
     }
 }

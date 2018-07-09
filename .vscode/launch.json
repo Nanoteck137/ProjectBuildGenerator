@@ -10,7 +10,7 @@
             "request": "launch",
             // "preLaunchTask": "Dotnet - Build",
             "program": "${workspaceFolder}/bin/x64/Debug/netcoreapp2.1/ProjectBuildGenerator.dll",
-            "args": ["-win32"],
+            "args": ["--windows", "ThisIsaPathToLua"],
             "cwd": "${workspaceFolder}/test2",
             "console": "externalTerminal",
             "stopAtEntry": false,
