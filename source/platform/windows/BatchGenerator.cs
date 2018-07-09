@@ -4,33 +4,8 @@ using System;
 
 using CodeGen.Batch;
 
-class BatchHelper
-{
-    private BatchHelper() { }
 
-    public static ICommand CreatePushDirCommand(string path, params ICommand[] commands)
-    {
-        return new PushDirectoryCommand(path, CreateCommandList(commands));
-    }
-
-    public static ICommand CreateExistCommand(string path, ExistCondition condition, params ICommand[] commands)
-    {
-        return new ExistCommand(condition, path, CreateCommandList(commands));
-    }
-
-    public static ICommand CreateCustomCommand(string command, params string[] args)
-    {
-        return new CustomCommand(command, args);
-    }
-
-    public static CommandList CreateCommandList(params ICommand[] commands)
-    {
-        return new CommandList(commands);
-    }
-}
-
-
-namespace CodeGen.Batch 
+namespace Batch
 {
     interface ICommand
     {
@@ -166,6 +141,16 @@ namespace CodeGen.Batch
         public void AddCommandList(CommandList list)
         {
             this.commands.AddCommandList(list);
+        }
+
+        public void CreateCustomCommand(string command, params string[] arguments)
+        {
+            AddCommand(new CustomCommand(command, arguments));
+        }
+
+        public void CreateExistCommand(string path, ExistCondition condition, params ICommand[] commands)
+        {
+            AddCommand(new ExistCommand(condition, path, new CommandList(commands)));
         }
 
         public string GenCode()

@@ -18,14 +18,30 @@ class WindowsProgram : Program
         string[] sourceFiles = LuaSystemLibrary.GetAllFilesWithExt(Path.Combine(Directory.GetCurrentDirectory(), "source"), "*.cpp");
 
         Project testProject = new Project("test", ProjectType.StaticLibrary, testFiles, null);
+        AddProject(testProject);
+
         Project programProject = new Project("program", ProjectType.Executable, sourceFiles, new string[] { testProject.Name });
-        CreateMakeTargetsFromProject(makeGenerator, testProject);
-        CreateMakeTargetsFromProject(makeGenerator, programProject);
+        AddProject(programProject);
+
+        CreateMakeTarget();
 
         Console.WriteLine(makeGenerator.GenCode());
     }
 
-    private void CreateMakeTargetsFromProject(Make.Generator generator, Project project)
+    public void CreateMakeTarget()
+    {
+        foreach(Project project in this.projects)
+        {
+            WindowsMake.CreateMakeTargetsFromProject(this.makeGenerator, project);
+        }
+    }
+}
+
+class WindowsMake
+{
+    private WindowsMake() { }
+
+    public static void CreateMakeTargetsFromProject(Make.Generator generator, Project project)
     {
         List<string> objFiles = new List<string>();
         foreach (string file in project.Files)
@@ -46,8 +62,8 @@ class WindowsProgram : Program
         switch (project.Type)
         {
             case ProjectType.Executable:
-                makeGenerator.AddTarget(CreateTargetForExecutable(objFiles, generator, project));
-            break;
+                generator.AddTarget(CreateTargetForExecutable(objFiles, generator, project));
+                break;
 
             case ProjectType.StaticLibrary:
                 generator.AddTarget(CreateTargetForStaticLibrary(objFiles, generator, project));
@@ -59,7 +75,7 @@ class WindowsProgram : Program
         }
     }
 
-    private Make.Target CreateTargetForExecutable(List<string> objFiles, Make.Generator generator, Project project)
+    public static Make.Target CreateTargetForExecutable(List<string> objFiles, Make.Generator generator, Project project)
     {
         Make.Target target = new Make.Target();
 
@@ -87,7 +103,7 @@ class WindowsProgram : Program
         return target;
     }
 
-    private Make.Target CreateTargetForStaticLibrary(List<string> objFiles, Make.Generator generator, Project project)
+    public static Make.Target CreateTargetForStaticLibrary(List<string> objFiles, Make.Generator generator, Project project)
     {
         Make.Target target = new Make.Target();
 
@@ -105,5 +121,9 @@ class WindowsProgram : Program
 
         return target;
     }
+}
 
+class WindowsBatch
+{
+    private WindowsBatch() { }
 }
