@@ -1,0 +1,22 @@
+Restructure code:
+
+    Lua:
+        Generate project objects
+
+    Share:
+        Project: Processed data about the project,
+            Then send it to one of the platform generators 
+
+    Windows: Takes the project and generates a batch script and make code
+        Batch script generator: Generate the build script
+        Generator specific make code: Use the make generator but with diffrent commands
+
+    Linux: Takes the project and generates a batch script and make code
+        Shell script generator: Generate the build script
+        Generate specific make code: Use the make generator but with diffrent commands
+
+    New folder structure:
+        - Source
+            - Platform
+                - Windows
+                - Linux

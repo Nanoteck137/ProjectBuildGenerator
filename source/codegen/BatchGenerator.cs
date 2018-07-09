@@ -8,9 +8,14 @@ class BatchHelper
 {
     private BatchHelper() { }
 
-    public static ICommand CreateExistCommand(string path, ExistCondition condition, CommandList commands)
+    public static ICommand CreatePushDirCommand(string path, params ICommand[] commands)
     {
-        return new ExistCommand(condition, path, commands);
+        return new PushDirectoryCommand(path, CreateCommandList(commands));
+    }
+
+    public static ICommand CreateExistCommand(string path, ExistCondition condition, params ICommand[] commands)
+    {
+        return new ExistCommand(condition, path, CreateCommandList(commands));
     }
 
     public static ICommand CreateCustomCommand(string command, params string[] args)

@@ -195,7 +195,6 @@ class Program
     private Dictionary<Mode, Config> configs;
 
     private MakeGen.Generator makeGenerator;
-    private BatchGen.Generator batchGenerator;
 
     public Program(Mode mode)
     {
@@ -241,7 +240,7 @@ class Program
         File.WriteAllText("Makefile.gen.win32", makeCode);
 
         string buildDir = Path.Combine(Directory.GetCurrentDirectory(), "build");
-        string makeFilePath = Path.Combine(Directory.GetCurrentDirectory(), "Makefile.win32.gen");
+        string makeFilePath = Path.Combine(Directory.GetCurrentDirectory(), "Makefile.gen.win32");
 
         ProjectBatch batch = new ProjectBatch(projects);
         string batchCode = batch.CreateBatchCode(buildDir, makeFilePath);
@@ -260,12 +259,12 @@ class Program
     {
         if(!this.configs.ContainsKey(mode))
         {
-            Config config = new Config();
-            config.Compiler = Helper.GetDefaultCompiler(mode);
-            config.CompilerOnlySwitch = Helper.GetDefaultCompilerOnlySwitch(mode);
-            config.OutputObjSwitch = Helper.GetDefaultOutputObjSwitch(mode);
-            config.OutputExeSwitch = Helper.GetDefaultOutputExeSwitch(mode);
-            config.Packer = Helper.GetDefaultPacker(mode);
+                Config config = new Config();
+                config.Compiler = Helper.GetDefaultCompiler(mode);
+                config.CompilerOnlySwitch = Helper.GetDefaultCompilerOnlySwitch(mode);
+                config.OutputObjSwitch = Helper.GetDefaultOutputObjSwitch(mode);
+                config.OutputExeSwitch = Helper.GetDefaultOutputExeSwitch(mode);
+                config.Packer = Helper.GetDefaultPacker(mode);
 
             config.Mode = mode;
 

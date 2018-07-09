@@ -32,11 +32,12 @@ class ProjectBatch
     public string CreateBatchCode(string buildDir, string makeFilePath)
     {
         ICommand createDirCommand = BatchHelper.CreateCustomCommand("mkdir", buildDir);
-        ICommand buildDirExistCommand = BatchHelper.CreateExistCommand(buildDir, ExistCondition.IfNot, BatchHelper.CreateCommandList(createDirCommand));
+        ICommand buildDirExistCommand = BatchHelper.CreateExistCommand(buildDir, ExistCondition.IfNot, createDirCommand);
 
         this.batchGenerator.AddCommand(buildDirExistCommand);
 
-        this.batchGenerator.AddCommand(BatchHelper.CreateCustomCommand("make", "-f", makeFilePath, projectToCall.Name + ".exe"));
+        ICommand makeCommand = BatchHelper.CreateCustomCommand("make", "-f", makeFilePath, projectToCall.Name + ".exe");
+        this.batchGenerator.AddCommand(BatchHelper.CreatePushDirCommand(buildDir, makeCommand));
         
         return this.batchGenerator.GenCode();
     }

@@ -1,8 +1,10 @@
 @echo off
 
-if not exist "C:\Programming\ProjectBuildGenerator\test2\build" (
-	mkdir C:\Programming\ProjectBuildGenerator\test2\build
+if not exist "W:\CSharp\ProjectBuildGenerator\test2\build" (
+	mkdir W:\CSharp\ProjectBuildGenerator\test2\build
 )
 
-make -f C:\Programming\ProjectBuildGenerator\test2\Makefile.win32.gen program.exe
+pushd "W:\CSharp\ProjectBuildGenerator\test2\build"
+	make -f W:\CSharp\ProjectBuildGenerator\test2\Makefile.gen.win32 program.exe
+popd
 
