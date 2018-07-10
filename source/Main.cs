@@ -13,7 +13,9 @@ public class MainClass
         Console.WriteLine("Options:");
         Console.WriteLine("  --windows              - (Default on Windows) Switches the windows code generator on");
         Console.WriteLine("  --linux                - (Default on Linux) Switches the linux code generator on");
-        Console.WriteLine("  --workspaceDirPath     - Sets where lua should start looking for projects");
+        Console.WriteLine("  --workspaceDirPath     - Sets where lua should start looking for projects,");
+        Console.WriteLine("                            if not set the workspace path is");
+        Console.WriteLine("                            set to the same directory where the lua files lives");
     }
 
     public static void Main(string[] commandLine)
@@ -31,16 +33,22 @@ public class MainClass
             Helper.Exit();
         }
 
+        if(commandLine.Length == 1 && commandLine[0] == "--help")
+        {
+            PrintUsage();
+            Helper.Exit();
+        }
+
         for(int index = 0; 
             index < commandLine.Length; 
             index++)
         {
-            if(index == commandLine.Length - 1)
+            if (index == commandLine.Length - 1)
             {
                 //Last argument
                 string filePath = Path.GetFullPath(commandLine[index]);
 
-                if(File.Exists(filePath))
+                if (File.Exists(filePath))
                     luaFilePath = filePath;
                 else
                     Helper.ErrorExit("The Last argument needs to be a path to the lua file");
@@ -77,7 +85,7 @@ public class MainClass
 
                     default:
                         PrintUsage();
-                        Environment.Exit(-1);
+                        Helper.Exit();
                         break;
                 }
             }
@@ -88,7 +96,7 @@ public class MainClass
         }
 
         if(workspaceDirPath == "")
-            workspaceDirPath = Directory.GetCurrentDirectory();
+            workspaceDirPath = Path.GetDirectoryName(luaFilePath);
 
         if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             IsWindows = true;
@@ -99,7 +107,11 @@ public class MainClass
 
         UserData.RegisterAssembly(System.Reflection.Assembly.GetExecutingAssembly());
 
-        new WindowsProgram(luaFilePath, workspaceDirPath);
+        if(IsLinux)
+            Helper.ErrorExit("Linux not implemented yet");
+        else if(IsWindows)
+            new WindowsProgram(luaFilePath, workspaceDirPath);
+
         Console.ReadLine();
     }
 }
