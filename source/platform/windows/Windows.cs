@@ -16,7 +16,8 @@ public class WindowsProgram : Program
 
         CreateMakeTarget();
 
-        Console.WriteLine(makeGenerator.GenCode());
+        string makeCode = makeGenerator.GenCode();
+        File.WriteAllText(Path.Combine(Directory.GetCurrentDirectory(), "Makefile.Windows"), makeCode);
     }
 
     public void CreateMakeTarget()

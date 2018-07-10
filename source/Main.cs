@@ -111,7 +111,5 @@ public class MainClass
             Helper.ErrorExit("Linux not implemented yet");
         else if(IsWindows)
             new WindowsProgram(luaFilePath, workspaceDirPath);
-
-        Console.ReadLine();
     }
 }
