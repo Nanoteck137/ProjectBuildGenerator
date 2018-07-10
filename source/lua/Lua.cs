@@ -71,25 +71,31 @@ public class LuaScript
         string fileData = File.ReadAllText(luaFilePath);
         try
         {
-            script.DoString(fileData, null, "Testing.lua");
+            script.DoString(fileData, null, luaFilePath);
         }
         catch (ScriptRuntimeException e)
         {
-            Console.WriteLine("LUA Error: " + e.DecoratedMessage);
-            System.Diagnostics.Debugger.Break();
-            throw e;
+            Helper.ErrorExit("Lua", e.DecoratedMessage);
         }
     }
 
     public DynValue CallFunction(string function, params object[] parameters)
     {
-        object functionPtr = script.Globals.Get(function);
-        if(functionPtr == null)
+        DynValue functionPtr = script.Globals.Get(function);
+        if(functionPtr.IsNil() && functionPtr.Type != DataType.Function)
         {
-            throw new Exception("Cant find function: " + function);
+            throw new NullReferenceException("Cant find function: " + function);
         }
 
-        DynValue result = script.Call(functionPtr, parameters);
+        DynValue result = DynValue.NewNil();
+        try 
+        {
+            result = script.Call(functionPtr, parameters);
+        }
+        catch(ScriptRuntimeException e)
+        {
+            Helper.ErrorExit("Lua", e.DecoratedMessage);
+        }
 
         return result;
     }
@@ -102,7 +108,7 @@ public class LuaScript
     public void AddEnumType(string name, Type enumType)
     {
         if(!enumType.IsEnum)
-            throw new Exception("The type needs to be a enum");
+            throw new InvalidOperationException("The type needs to be a enum");
         
         Table table = new Table(script);
 

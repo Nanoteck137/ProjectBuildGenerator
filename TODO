@@ -1,17 +1,4 @@
  - Maybe we want to generate for both linux and windows "at the same time"
 
- Later go over the code and handle all the errors and exception in a better way
-
- Program:
-    Windows - Done
-
- Lua:
-    Need better error handling in there
-
- Linux: Takes the project and generates a batch script and make code
-    Generate specific make code: Use the make generator but with diffrent commands
-
- Main: 
-    - Command line arguments
-    Need to print the how to use the command line 
-    
+ Linux needs to be implemented.
+     
