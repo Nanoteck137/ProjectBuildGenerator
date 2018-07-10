@@ -1,10 +1,9 @@
- - Maybe we want to generate for both linux and windows
+ - Maybe we want to generate for both linux and windows "at the same time"
 
  Later go over the code and handle all the errors and exception in a better way
 
  Program:
     Windows - Done
-    Init Lua Script - And get the projects from lua
 
  Lua:
     Need better error handling in there

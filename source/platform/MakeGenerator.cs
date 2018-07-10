@@ -5,7 +5,7 @@ using System;
 
 namespace Make 
 {
-    class Command
+    public class Command
     {
         public string Instruction { get; set; }
         public string[] Arguments { get; set; }
@@ -29,7 +29,7 @@ namespace Make
         }
     }
 
-    class Variable
+    public class Variable
     {
         public string Name { get; set; }
         public string Value { get; set; }
@@ -48,7 +48,7 @@ namespace Make
         }
     }
 
-    class Target
+    public class Target
     {
         public string Name { get; set; }
         public string[] Dependencies { get; set; }
@@ -83,7 +83,7 @@ namespace Make
         }
     }
 
-    class Generator
+    public class Generator
     {
         private List<Variable> variables;
         private List<Target> targets;

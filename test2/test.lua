@@ -1,5 +1,5 @@
 function CreateProgramProject()
-    local files = System.GetAllFilesWithExt(System.GetCurrentPath("source/"), "*.cpp");
+    local files = Project.GetWorkspaceFiles("source/", "*.cpp");
 
     local project = {
         Name = "program",
@@ -12,7 +12,7 @@ function CreateProgramProject()
 end
 
 function CreateTestProject()
-    local files = System.GetAllFilesWithExt(System.GetCurrentPath("test/"), "*.cpp");
+    local files = Project.GetWorkspaceFiles("test/", "*.cpp");
 
     local project = {
         Name = "test",
@@ -23,7 +23,7 @@ function CreateTestProject()
     Project.AddProject(project);
 end
 
-function Init(mode)
+function Init()
     CreateProgramProject();
     CreateTestProject();
 end

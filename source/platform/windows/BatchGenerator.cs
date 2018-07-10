@@ -7,12 +7,12 @@ using CodeGen.Batch;
 
 namespace Batch
 {
-    interface ICommand
+    public interface ICommand
     {
         void GenCode(StringBuilder builder);
     }
 
-    class CommandList
+    public class CommandList
     {
         public List<ICommand> commands;
 
@@ -49,7 +49,7 @@ namespace Batch
         }
     }
 
-    class PushDirectoryCommand : ICommand
+    public class PushDirectoryCommand : ICommand
     {
         private string dirPath;
         private CommandList commands;
@@ -68,13 +68,13 @@ namespace Batch
         }
     }
 
-    enum ExistCondition
+    public enum ExistCondition
     {
         If,
         IfNot,
     }
 
-    class ExistCommand : ICommand
+    public class ExistCommand : ICommand
     {
         private ExistCondition condition;
         private string path;
@@ -101,7 +101,7 @@ namespace Batch
         }
     }
 
-    class CustomCommand : ICommand
+    public class CustomCommand : ICommand
     {
         private string command;
         private string[] arguments;
@@ -124,7 +124,7 @@ namespace Batch
         }
     }
 
-    class Generator
+    public class Generator
     {
         public CommandList commands;
 

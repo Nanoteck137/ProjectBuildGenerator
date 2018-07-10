@@ -2,12 +2,12 @@ using System.Collections.Generic;
 using System.IO;
 using System;
 
-class WindowsProgram : Program
+public class WindowsProgram : Program
 {
     private Make.Generator makeGenerator;
     
-    public WindowsProgram(string luaConfigPath)
-        : base(luaConfigPath)
+    public WindowsProgram(string luaFilePath, string workspaceDir)
+        : base(luaFilePath, workspaceDir)
     {
         makeGenerator = new Make.Generator();
 

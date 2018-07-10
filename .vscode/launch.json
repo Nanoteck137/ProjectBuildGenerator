@@ -10,7 +10,7 @@
             "request": "launch",
             // "preLaunchTask": "Dotnet - Build",
             "program": "${workspaceFolder}/bin/x64/Debug/netcoreapp2.1/ProjectBuildGenerator.dll",
-            "args": ["Hello", "--windows", "--buildDirPath=build/", "--workspaceDirPath=./", "test.lua"],
+            "args": ["--windows", "--buildDirPath=build/", "--workspaceDirPath=./", "test.lua"],
             "cwd": "${workspaceFolder}/test2",
             "console": "externalTerminal",
             "stopAtEntry": false,

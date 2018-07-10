@@ -5,37 +5,33 @@ using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Loaders;
 
 [MoonSharpUserData]
-class LuaSystemLibrary
+public class LuaSystemLibrary
 {
-    private LuaSystemLibrary() { }
+    private LuaScript script;
 
-    public static void Print(string str)
+    public LuaSystemLibrary(LuaScript script) 
+    { 
+        this.script = script;
+    }
+
+    public void Print(string str)
     {
         Console.Write(str);
     }
 
-    public static void PrintLine(string str)
+    public void PrintLine(string str)
     {
         Console.WriteLine(str);
     }
 
-    public static string[] GetAllFilesWithExt(string dirPaths, string ext)
+    public string[] GetAllFilesWithExt(string dirPath, string ext)
     {
-        return Directory.GetFiles(dirPaths, ext, SearchOption.AllDirectories);
+        return Helper.GetAllFilesWithExt(dirPath, ext);
     }
 
-    public static string GetDirectoryPath()
-    {
-        return Directory.GetCurrentDirectory();
-    }
-
-    public static string GetCurrentPath(string relativePath)
-    {
-        return Path.Combine(GetDirectoryPath(), relativePath);
-    }
 }
 
-class LuaScriptLoader : ScriptLoaderBase
+public class LuaScriptLoader : ScriptLoaderBase
 {
     public override object LoadFile(string file, Table globalContext)
     {
@@ -49,7 +45,7 @@ class LuaScriptLoader : ScriptLoaderBase
     }
 }
 
-class LuaScript
+public class LuaScript
 {
     private Script script;
 
@@ -61,7 +57,8 @@ class LuaScript
         loader.ModulePaths = new string[] { "?" };
         script.Options.ScriptLoader = loader;
 
-        script.Globals["System"] = typeof(LuaSystemLibrary);
+        LuaSystemLibrary systemLib = new LuaSystemLibrary(this);
+        script.Globals["System"] = systemLib;
     }
 
     public void AddInterface(string name, object instance)

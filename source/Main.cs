@@ -156,7 +156,7 @@ enum Mode
     }
 }*/
 
-class MainClass
+public class MainClass
 {
     /*
         Structure of the Command line arguments
@@ -268,7 +268,7 @@ class MainClass
 
         UserData.RegisterAssembly(System.Reflection.Assembly.GetExecutingAssembly());
 
-        new WindowsProgram(luaFilePath);
+        new WindowsProgram(luaFilePath, workspaceDirPath);
         Console.ReadLine();
     }
 }

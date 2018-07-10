@@ -1,11 +1,12 @@
 using System.Collections.Generic;
+using System.IO;
 using System;
 
 using MoonSharp.Interpreter;
 
 //TODO: Revisit this when i want the lua integration to work
 
-class LuaHelper
+public class LuaHelper
 {
     private LuaHelper() { }
 
@@ -21,7 +22,7 @@ class LuaHelper
 }
 
 [MoonSharpUserData]
-class LuaProjectInterface
+public class LuaProjectInterface
 {
     private Program program;
 
@@ -82,6 +83,16 @@ class LuaProjectInterface
         result.ProjectDependencies = GetStringArray("ProjectDependencies", projectDependencies);
 
         this.program.AddProject(result);
+    }
+
+    public string GetWorkspaceDir()
+    {
+        return this.program.WorkspaceDir;
+    }
+
+    public string[] GetWorkspaceFiles(string workspacePath, string ext)
+    {
+        return Helper.GetAllFilesWithExt(Path.Combine(GetWorkspaceDir(), workspacePath), "*.cpp");
     }
 
 }

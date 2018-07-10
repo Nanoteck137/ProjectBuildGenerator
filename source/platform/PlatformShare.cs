@@ -9,15 +9,17 @@ using System;
 
 public abstract class Program
 {
-    //TODO: We want the lua script to live here
-    //TODO: We want a list of projects
-    private string luaFilePath;
-    private LuaScript script;
+    public string WorkspaceDir { get; private set; }
+
+    protected string luaFilePath;
+    protected LuaScript script;
+
     protected List<Project> projects;
 
-    protected Program(string luaConfigPath)
+    protected Program(string luaFilePath, string workspaceDir)
     {
-        this.luaFilePath = luaConfigPath;
+        this.luaFilePath = luaFilePath;
+        this.WorkspaceDir = workspaceDir;
 
         projects = new List<Project>();
         script = new LuaScript();
