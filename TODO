@@ -1,17 +1,18 @@
-Restructure code:
-    Later go over the code and handle all the errors and exception in a better way
+ - Maybe we want to generate for both linux and windows
 
-    Program:
-        Windows - Done
-        Init Lua Script - And get the projects from lua
+ Later go over the code and handle all the errors and exception in a better way
 
-    Lua:
-        Need better error handling in there
+ Program:
+    Windows - Done
+    Init Lua Script - And get the projects from lua
 
-    Linux: Takes the project and generates a batch script and make code
-        Generate specific make code: Use the make generator but with diffrent commands
+ Lua:
+    Need better error handling in there
 
-    Main: 
-     - Command line arguments
-        Need to be parsed
+ Linux: Takes the project and generates a batch script and make code
+    Generate specific make code: Use the make generator but with diffrent commands
+
+ Main: 
+    - Command line arguments
+    Need to print the how to use the command line 
     

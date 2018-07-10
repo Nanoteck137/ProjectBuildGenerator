@@ -160,6 +160,7 @@ class MainClass
 {
     /*
         Structure of the Command line arguments
+        ProjectBuildGenerator.exe
         [options]: --windows, --linux and other options
                  : --buildDirPath=path - This is the path to where the build files is gonna live, this can be a absolute path or relative.
                  : --workspaceDirPath=path - This is the path where lua's Working directory is, 
@@ -167,8 +168,29 @@ class MainClass
                     this is gonna get resolved later with Path.GetFullPath().
         luaFilePath: C:\CSharp\ProjectBuildGenerator\Test2\test.lua
      */
+
+    public static void PrintUsage()
+    {
+        Console.WriteLine("Usage: {0} [options] LuaFilePath", AppDomain.CurrentDomain.FriendlyName);
+        Console.WriteLine("Options:");
+        Console.WriteLine("  --windows              - Switches the windows code generator on");
+        Console.WriteLine("  --linux                - Switches the linux code generator on");
+        Console.WriteLine("  --buildDirPath:        - Sets where the build directory should be");
+        Console.WriteLine("  --workspaceDirPath     - Sets where lua should start looking for projects");
+    }
+
     public static void Main(string[] commandLine)
     {
+        string luaFilePath = "";
+        string buildDirPath = "";
+        string workspaceDirPath = "";
+
+        bool IsWindows = false;
+        bool IsLinux = false;
+
+        if(commandLine.Length <= 0)
+            throw new Exception();
+
         for(int index = 0; 
             index < commandLine.Length; 
             index++)
@@ -176,14 +198,77 @@ class MainClass
             if(index == commandLine.Length - 1)
             {
                 //Last argument
-                Console.WriteLine("Last Argument: {0}", commandLine[index]);
+                string filePath = Path.GetFullPath(commandLine[index]);
+
+                if(File.Exists(filePath))
+                    luaFilePath = filePath;
+                else
+                    throw new Exception();
+
+                break;
+            }
+
+            string arg = commandLine[index];
+            if(arg[0] == '-' && arg[1] == '-')
+            {
+                arg = arg.Remove(0, 2).ToLower();
+                string[] splittedArgs = arg.Split('=');
+                arg = splittedArgs[0];
+                switch(arg)
+                {
+                    case "windows":
+                        if(IsLinux)
+                            throw new Exception();
+                        IsWindows = true;
+                        break;
+
+                    case "linux":
+                        if(IsWindows)
+                            throw new Exception();
+                        IsLinux = true;
+                        break;
+
+                    case "builddirpath":
+                        if(splittedArgs.Length == 2)
+                            buildDirPath = Path.GetFullPath(splittedArgs[1]);
+                        else
+                            throw new Exception();
+                        break;
+
+                    case "workspacedirpath":
+                        if (splittedArgs.Length == 2)
+                            workspaceDirPath = Path.GetFullPath(splittedArgs[1]);
+                        else
+                            throw new Exception();
+                        break;
+
+                    default:
+                        PrintUsage();
+                        Environment.Exit(-1);
+                        break;
+                }
+            }
+            else
+            {
+                Console.WriteLine("Unknown argument: {0}", arg);
+                PrintUsage();
+                Environment.Exit(-1);
             }
         }
 
+        if(luaFilePath == "")
+            throw new Exception();
+        if(buildDirPath == "")
+            throw new Exception();
+        if(workspaceDirPath == "")
+            throw new Exception();
+
+        if(!IsWindows && !IsLinux)
+            throw new Exception();
+
         UserData.RegisterAssembly(System.Reflection.Assembly.GetExecutingAssembly());
 
-        string luaPath = Path.Combine(Directory.GetCurrentDirectory(), "test.lua");
-        //new WindowsProgram(luaPath);
+        new WindowsProgram(luaFilePath);
         Console.ReadLine();
     }
 }
